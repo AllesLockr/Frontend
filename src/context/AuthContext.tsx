@@ -1,10 +1,5 @@
 import React, { createContext, useCallback, useContext, useState } from "react"
-import { buildApiUrl } from "@/config/api"
-
-interface LoginResponse {
-  userId: string
-  jwtToken: string
-}
+import { login as loginRequest } from "@/client"
 
 interface AuthContextType {
   isAuthenticated: boolean
@@ -29,17 +24,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = useCallback(async (username: string, password: string) => {
     setIsLoading(true)
     try {
-      const response = await fetch(buildApiUrl("/user/auth/login"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+      const { data, error, response } = await loginRequest({
+        body: { username, password },
       })
 
-      if (!response.ok) {
+      if (error || !data) {
         throw new Error(getFriendlyErrorMessage(response.status))
       }
-
-      const data: LoginResponse = await response.json()
 
       setToken(data.jwtToken)
       setUserId(data.userId)
