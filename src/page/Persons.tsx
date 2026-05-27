@@ -28,7 +28,9 @@ export function Persons() {
     const [size, setSize] = useState(10)
     const [search, setSearch] = useState("")
 
-    const { data, mutate, isPending } = useMutation(getPersonsPagedMutation())
+    const { data, error, mutate, isPending } = useMutation(
+        getPersonsPagedMutation()
+    )
 
     const filter: PersonFilterSchema = search ? { search } : {}
 
@@ -41,7 +43,7 @@ export function Persons() {
     }, [search, size])
 
     const pageInfo = data?.page
-    const persons = pageInfo?.content ?? []
+    const persons  = pageInfo?.content ?? []
 
     return (
         <div className="space-y-4">
@@ -74,6 +76,15 @@ export function Persons() {
                                 className="text-center text-muted-foreground"
                             >
                                 Loading...
+                            </TableCell>
+                        </TableRow>
+                    ) : error ? (
+                        <TableRow>
+                            <TableCell
+                                colSpan={3}
+                                className="text-center text-destructive"
+                            >
+                                Failed to load persons. Please try again.
                             </TableCell>
                         </TableRow>
                     ) : persons.length === 0 ? (
