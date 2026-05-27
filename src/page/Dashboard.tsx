@@ -1,7 +1,14 @@
 import { PageLayout } from "@/components/PageLayout.tsx"
 import { StatsCard } from "@/components/ui/StatsCard.tsx"
 import { Building, Key, Lock, MapPin, User } from "lucide-react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@/components/ui/table"
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table"
 
 import { Badge } from "@/components/ui/badge.tsx"
 
@@ -74,72 +81,66 @@ const logList = [
 
 export function Dashboard() {
     return (
-        <PageLayout>
-            <div className="flex flex-col gap-4">
-                <div className="flex gap-8 max-md:flex-col">
-                    <StatsCard title="52" description="Schlösser" icon={Lock} />
-                    <StatsCard title="61" description="Schlüssel" icon={Key} />
-                    <StatsCard title="34" description="Personen" icon={User} />
-                    <StatsCard
-                        title="3"
-                        description="Objekte"
-                        icon={Building}
-                    />
-                    <StatsCard title="16" description="Zonen" icon={MapPin} />
-                </div>
-
-                <h1 className="text-xl font-bold">API-Overview</h1>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Status</TableHead>
-                            <TableHead>API</TableHead>
-                            <TableHead>Last connection</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {apiList.map((api) => (
-                            <TableRow key={api.route}>
-                                <TableCell>
-                                    <Badge
-                                        className={
-                                            api.connectionSuccessful
-                                                ? "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300"
-                                                : "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300"
-                                        }
-                                    >
-                                        {api.connectionSuccessful
-                                            ? "Online"
-                                            : "Offline"}
-                                    </Badge>
-                                </TableCell>
-                                <TableCell>{api.route}</TableCell>
-                                <TableCell>{api.lastConnected}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-
-                <h1 className="text-xl font-bold">Recent Logs</h1>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Timestamp</TableHead>
-                            <TableHead>Message</TableHead>
-                            <TableHead>Performed by</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {logList.map((log) => (
-                            <TableRow key={log.timestamp}>
-                                <TableCell>{log.timestamp}</TableCell>
-                                <TableCell>{log.message}</TableCell>
-                                <TableCell>{log.performedBy}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+        <div className="flex flex-col gap-4">
+            <div className="flex gap-8 max-md:flex-col">
+                <StatsCard title="52" description="Schlösser" icon={Lock} />
+                <StatsCard title="61" description="Schlüssel" icon={Key} />
+                <StatsCard title="34" description="Personen" icon={User} />
+                <StatsCard title="3" description="Objekte" icon={Building} />
+                <StatsCard title="16" description="Zonen" icon={MapPin} />
             </div>
-        </PageLayout>
+
+            <h1 className="text-xl font-bold">API-Overview</h1>
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>Status</TableHead>
+                        <TableHead>API</TableHead>
+                        <TableHead>Last connection</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {apiList.map((api) => (
+                        <TableRow key={api.route}>
+                            <TableCell>
+                                <Badge
+                                    className={
+                                        api.connectionSuccessful
+                                            ? "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300"
+                                            : "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300"
+                                    }
+                                >
+                                    {api.connectionSuccessful
+                                        ? "Online"
+                                        : "Offline"}
+                                </Badge>
+                            </TableCell>
+                            <TableCell>{api.route}</TableCell>
+                            <TableCell>{api.lastConnected}</TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+
+            <h1 className="text-xl font-bold">Recent Logs</h1>
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>Timestamp</TableHead>
+                        <TableHead>Message</TableHead>
+                        <TableHead>Performed by</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {logList.map((log) => (
+                        <TableRow key={log.timestamp}>
+                            <TableCell>{log.timestamp}</TableCell>
+                            <TableCell>{log.message}</TableCell>
+                            <TableCell>{log.performedBy}</TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </div>
     )
 }

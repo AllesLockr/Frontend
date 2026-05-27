@@ -5,13 +5,16 @@ import "./index.css"
 import App from "./App.tsx"
 import { ThemeProvider } from "@/components/theme-provider.tsx"
 import { BrowserRouter } from "react-router"
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query"
 
 createRoot(document.getElementById("root")!).render(
     <BrowserRouter>
         <StrictMode>
-            <ThemeProvider>
-                <App />
-            </ThemeProvider>
+            <QueryClientProvider client={new QueryClient()}>
+                <ThemeProvider>
+                    <App />
+                </ThemeProvider>
+            </QueryClientProvider>
         </StrictMode>
     </BrowserRouter>
 )
