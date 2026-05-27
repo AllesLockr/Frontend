@@ -3,6 +3,8 @@ import { Dashboard } from "@/page/Dashboard.tsx"
 import { AuthProvider, useAuth } from "@/context/AuthContext.tsx"
 import { Navigate, Route, Routes } from "react-router"
 import React from "react"
+import { Persons } from "@/page/Persons.tsx"
+import { PageLayout } from "@/components/PageLayout.tsx"
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { isAuthenticated } = useAuth()
@@ -11,7 +13,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
         return <Navigate to={"/login"} replace />
     }
 
-    return children
+    return <PageLayout>{children}</PageLayout>
 }
 
 export function App() {
@@ -19,7 +21,10 @@ export function App() {
         <AuthProvider>
             <div className="flex h-screen w-screen flex-1 items-center justify-center">
                 <Routes>
-                    <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                    <Route
+                        path="/"
+                        element={<Navigate to="/dashboard" replace />}
+                    />
                     <Route path="/login" element={<UserLogin />} />
 
                     <Route
@@ -31,10 +36,10 @@ export function App() {
                         }
                     />
                     <Route
-                        path="/dashboard"
+                        path="/persons"
                         element={
                             <ProtectedRoute>
-                                <Dashboard />
+                                <Persons />
                             </ProtectedRoute>
                         }
                     />

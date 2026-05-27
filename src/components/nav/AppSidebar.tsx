@@ -14,15 +14,73 @@ import {
     Building,
     Key,
     LayoutDashboard,
-    Lock,
+    Lock, type LucideIcon,
     MapPin,
     Network,
     User,
     Users,
 } from "lucide-react"
 import { SidebarUser } from "@/components/nav/SidebarUser.tsx"
+import { NavLink } from "react-router"
+
+interface SideBarSection{
+    id: string
+    elements: SideBarElement[]
+}
+
+interface SideBarElement {
+    id: string
+    icon: LucideIcon
+    name: string
+    path: string
+}
+
+
 
 export function AppSidebar() {
+
+    const sections: SideBarSection[] = [
+        {
+            id: "main",
+            elements: [
+                {
+                    id: "dashboard",
+                    icon: LayoutDashboard,
+                    name: "Dashboard",
+                    path: "/dashboard",
+                },
+            ],
+        },
+        {
+            id: "management",
+            elements: [
+                {
+                    id: "persons",
+                    icon: User,
+                    name: "Persons",
+                    path: "/persons",
+                },
+                { id: "roles", icon: Users, name: "Roles", path: "/roles" },
+                { id: "zones", icon: MapPin, name: "Zones", path: "/zones" },
+                {
+                    id: "estates",
+                    icon: Building,
+                    name: "Estates",
+                    path: "/estates",
+                },
+                { id: "locks", icon: Lock, name: "Locks", path: "/locks" },
+                { id: "keys", icon: Key, name: "Keys", path: "/keys" },
+            ],
+        },
+        {
+            id: "system",
+            elements: [
+                { id: "apis", icon: Network, name: "APIs", path: "/apis" },
+                { id: "logs", icon: BookText, name: "Logs", path: "/logs" },
+            ],
+        },
+    ]
+
     return (
         <Sidebar>
             <SidebarHeader>
@@ -38,90 +96,28 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <SidebarGroup>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            <SidebarMenuItem>
-                                <SidebarMenuButton>
-                                    <LayoutDashboard />
-                                    Dashboard
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
-
-                <SidebarGroup>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            <SidebarMenuItem>
-                                <SidebarMenuButton>
-                                    <User />
-                                    Persons
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        </SidebarMenu>
-                        <SidebarMenu>
-                            <SidebarMenuItem>
-                                <SidebarMenuButton>
-                                    <Users />
-                                    Roles
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        </SidebarMenu>
-                        <SidebarMenu>
-                            <SidebarMenuItem>
-                                <SidebarMenuButton>
-                                    <MapPin />
-                                    Zones
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        </SidebarMenu>
-                        <SidebarMenu>
-                            <SidebarMenuItem>
-                                <SidebarMenuButton>
-                                    <Building />
-                                    Estates
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        </SidebarMenu>
-                        <SidebarMenu>
-                            <SidebarMenuItem>
-                                <SidebarMenuButton>
-                                    <Lock />
-                                    Locks
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        </SidebarMenu>
-                        <SidebarMenu>
-                            <SidebarMenuItem>
-                                <SidebarMenuButton>
-                                    <Key />
-                                    Keys
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
-
-                <SidebarGroup>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            <SidebarMenuItem>
-                                <SidebarMenuButton>
-                                    <Network />
-                                    APIs
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                            <SidebarMenuItem>
-                                <SidebarMenuButton>
-                                    <BookText />
-                                    Logs
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
+                {sections.map((section) => (
+                    <SidebarGroup key={section.id}>
+                        <SidebarGroupContent>
+                            {section.elements.map((element) => (
+                                <SidebarMenu key={element.id}>
+                                    <SidebarMenuItem key={element.id}>
+                                        <NavLink to={element.path}>
+                                            {({ isActive }) => (
+                                                <SidebarMenuButton
+                                                    isActive={isActive}
+                                                >
+                                                    <element.icon />
+                                                    {element.name}
+                                                </SidebarMenuButton>
+                                            )}
+                                        </NavLink>
+                                    </SidebarMenuItem>
+                                </SidebarMenu>
+                            ))}
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+                ))}
             </SidebarContent>
             <SidebarFooter>
                 <SidebarUser />
