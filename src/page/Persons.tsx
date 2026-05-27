@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select"
 import { getPersonsPagedMutation } from "@/client/@tanstack/react-query.gen.ts"
 import { useMutation } from "@tanstack/react-query"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { ChevronLeft, ChevronRight, Search } from "lucide-react"
 import type { PersonFilterSchema } from "@/client/types.gen.ts"
 
@@ -32,18 +32,25 @@ export function Persons() {
         getPersonsPagedMutation()
     )
 
-    const filter: PersonFilterSchema = search ? { search } : {}
+    const prevSearchRef = useRef(search)
+    const prevSizeRef = useRef(size)
 
     useEffect(() => {
-        mutate({ body: { filter, page, size } })
+        let currentPage = page
+
+        if (search !== prevSearchRef.current || size !== prevSizeRef.current) {
+            currentPage = 0
+            setPage(0)
+            prevSearchRef.current = search
+            prevSizeRef.current = size
+        }
+
+        const filter: PersonFilterSchema = search ? { search } : {}
+        mutate({ body: { filter, page: currentPage, size } })
     }, [page, size, search])
 
-    useEffect(() => {
-        setPage(0)
-    }, [search, size])
-
     const pageInfo = data?.page
-    const persons  = pageInfo?.content ?? []
+    const persons = pageInfo?.content ?? []
 
     return (
         <div className="space-y-4">
@@ -137,8 +144,14 @@ export function Persons() {
                     <Button
                         variant="outline"
                         size="icon"
-                        onClick={() => setPage((p) => p - 1)}
-                        disabled={isPending || pageInfo?.isFirst}
+                        aria-label="Previous page"
+                        onClick={() => setPage((p) => Math.max(0, p - 1))}
+                        disabled={
+                            isPending ||
+                            !!error ||
+                            !pageInfo ||
+                            pageInfo.isFirst
+                        }
                     >
                         <ChevronLeft className="h-4 w-4" />
                     </Button>
@@ -148,8 +161,11 @@ export function Persons() {
                     <Button
                         variant="outline"
                         size="icon"
+                        aria-label="Next page"
                         onClick={() => setPage((p) => p + 1)}
-                        disabled={isPending || pageInfo?.isLast}
+                        disabled={
+                            isPending || !!error || !pageInfo || pageInfo.isLast
+                        }
                     >
                         <ChevronRight className="h-4 w-4" />
                     </Button>
