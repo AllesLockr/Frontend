@@ -23,7 +23,7 @@ import {
 import { SidebarUser } from "@/components/nav/SidebarUser.tsx"
 import { NavLink } from "react-router"
 
-interface SideBarSection{
+interface SideBarSection {
     id: string
     elements: SideBarElement[]
 }
@@ -75,7 +75,7 @@ export function AppSidebar() {
         {
             id: "system",
             elements: [
-                { id: "apis", icon: Network, name: "APIs", path: "/apis" },
+                { id: "vendors", icon: Network, name: "Vendors", path: "/vendors" },
                 { id: "logs", icon: BookText, name: "Logs", path: "/logs" },
             ],
         },
