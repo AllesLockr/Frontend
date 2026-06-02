@@ -1,11 +1,13 @@
 import React, { createContext, useCallback, useContext, useState } from "react"
-import { login as loginRequest } from "@/client"
+import { getUser, login as loginRequest, type UserSchema } from "@/client"
 import { client } from "@/client/client.gen.ts"
+import { useQuery } from "@tanstack/react-query"
 
 interface AuthContextType {
     isAuthenticated: boolean
     token: string | null
     userId: string | null
+    user: UserSchema | null
     login: (username: string, password: string) => Promise<void>
     logout: () => void
     isLoading: boolean
@@ -26,6 +28,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.getItem("user_id")
     )
     const [isLoading, setIsLoading] = useState(false)
+
+    const { data: user } = useQuery({
+        queryKey: ["user", userId],
+        queryFn: async () => {
+            const r = await getUser({ path: { id: userId! } })
+            return r.data?.user ?? null
+        },
+        enabled: !!userId,
+    })
 
     const login = useCallback(async (username: string, password: string) => {
         setIsLoading(true)
@@ -53,7 +64,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     }, [])
 
-    // Clear session and remove stored credentials
     const logout = useCallback(() => {
         setToken(null)
         setUserId(null)
@@ -66,7 +76,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     return (
         <AuthContext.Provider
-            value={{ isAuthenticated, token, userId, login, logout, isLoading }}
+            value={{
+                isAuthenticated: isAuthenticated,
+                token: token,
+                userId: userId,
+                user: user ?? null,
+                login: login,
+                logout: logout,
+                isLoading: isLoading,
+            }}
         >
             {children}
         </AuthContext.Provider>
