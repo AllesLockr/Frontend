@@ -78,7 +78,6 @@ export function Persons() {
                 <div className="flex items-center gap-2">
                     <div className="relative w-64">
                         <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                        {/* Input bleibt reaktiv und direkt an 'search' gebunden */}
                         <Input
                             placeholder="Search by name or email..."
                             className="pl-9"
