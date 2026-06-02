@@ -33,7 +33,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         queryKey: ["user", userId],
         queryFn: async () => {
             const r = await getUser({ path: { id: userId! } })
-            return r.data?.user
+            return r.data?.user ?? null
         },
         enabled: !!userId,
     })
