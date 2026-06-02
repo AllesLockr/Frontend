@@ -61,7 +61,7 @@ export function Dashboard() {
                                 colSpan={3}
                                 className="h-24 text-center font-medium text-red-600"
                             >
-                                {vendorsDataError instanceof Error ? vendorsDataError.message : 'An unknown error occured.'}
+                                {vendorsDataError instanceof Error ? vendorsDataError.message : 'An unknown error occurred.'}
                             </TableCell>
                         </TableRow>
                     ) : vendors.data.length === 0 ? (
@@ -107,7 +107,7 @@ export function Dashboard() {
                                 colSpan={3}
                                 className="h-24 text-center font-medium text-red-600"
                             >
-                                {auditLogsError instanceof Error ? auditLogsError.message : 'An unknown error occured.'}
+                                {auditLogsError instanceof Error ? auditLogsError.message : 'An unknown error occurred.'}
                             </TableCell>
                         </TableRow>
                     ) : auditLogs.data.page.content.length === 0 ? (
