@@ -15,13 +15,36 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { getAllAuditLogsPagedMutation } from "@/client/@tanstack/react-query.gen.ts"
-import { useMutation } from "@tanstack/react-query"
+import {
+    getAllAuditLogsPagedMutation,
+    getUserOptions // Importiert die generierten Query-Optionen für den User-Endpoint
+} from "@/client/@tanstack/react-query.gen.ts"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { useEffect, useRef, useState } from "react"
 import { ChevronLeft, ChevronRight, Search } from "lucide-react"
 import type { AuditLogFilterDto } from "@/client/types.gen.ts"
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50, 100]
+
+// Hilfskomponente zum Laden und Anzeigen des Usernamens
+function Username({ userId }: { userId: string }) {
+    const { data, isLoading, error } = useQuery(
+        getUserOptions({
+            path: { id: userId },
+        })
+    )
+
+    if (isLoading) {
+        return <span className="text-muted-foreground animate-pulse">Lade...</span>
+    }
+
+    if (error || !data) {
+        // Fallback auf die User-ID, falls der Benutzer gelöscht wurde oder ein Fehler auftritt
+        return <span className="font-mono text-xs text-muted-foreground">{userId}</span>
+    }
+
+    return <span className="font-medium">{data.user.firstname} {data.user.lastname}</span>
+}
 
 export function AuditLogs() {
     const [page, setPage] = useState(0)
@@ -31,7 +54,8 @@ export function AuditLogs() {
     const [fromDate, setFromDate] = useState("")
     const [toDate, setToDate] = useState("")
 
-    const [debouncedPerformedByUserId, setDebouncedPerformedByUserId] = useState("")
+    const [debouncedPerformedByUserId, setDebouncedPerformedByUserId] =
+        useState("")
     const [debouncedFromDate, setDebouncedFromDate] = useState("")
     const [debouncedToDate, setDebouncedToDate] = useState("")
 
@@ -81,7 +105,8 @@ export function AuditLogs() {
         let currentPage = page
 
         const filtersChanged =
-            debouncedPerformedByUserId !== prevFiltersRef.current.performedByUserId ||
+            debouncedPerformedByUserId !==
+            prevFiltersRef.current.performedByUserId ||
             debouncedFromDate !== prevFiltersRef.current.fromDate ||
             debouncedToDate !== prevFiltersRef.current.toDate ||
             size !== prevFiltersRef.current.size
@@ -100,28 +125,33 @@ export function AuditLogs() {
         }
 
         fetchAuditLogs(currentPage)
-    }, [page, size, debouncedPerformedByUserId, debouncedFromDate, debouncedToDate])
+    }, [page, size, debouncedPerformedByUserId, debouncedFromDate,
+        debouncedToDate])
 
     const pageInfo = data?.page
     const auditLogs = pageInfo?.content ?? []
 
     return (
         <div className="space-y-4">
-            <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <section className="flex flex-col gap-4 sm:flex-row sm:items-center 
+sm:justify-between">
                 <h2 className="text-2xl font-semibold">Audit Logs</h2>
                 <div className="flex flex-wrap items-center gap-3">
                     <div className="relative w-64">
-                        <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                        <Search className="absolute top-1/2 left-3 h-4 w-4 
+-translate-y-1/2 text-muted-foreground" />
                         <Input
                             placeholder="Filter by User ID..."
                             className="pl-9"
                             value={performedByUserId}
-                            onChange={(e) => setPerformedByUserId(e.target.value)}
+                            onChange={(e) =>
+                                setPerformedByUserId(e.target.value)}
                         />
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground">From:</span>
+                        <span className="text-xs text-muted-
+foreground">From:</span>
                         <Input
                             type="date"
                             className="w-40"
@@ -131,7 +161,8 @@ export function AuditLogs() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground">To:</span>
+                        <span className="text-xs text-muted-
+foreground">To:</span>
                         <Input
                             type="date"
                             className="w-40"
@@ -146,7 +177,7 @@ export function AuditLogs() {
                 <TableHeader>
                     <TableRow>
                         <TableHead>Created At</TableHead>
-                        <TableHead>Performed By (User ID)</TableHead>
+                        <TableHead>Performed By</TableHead>
                         <TableHead>Message</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -184,8 +215,9 @@ export function AuditLogs() {
                                 <TableCell className="whitespace-nowrap">
                                     {new Date(log.createdAt).toLocaleString()}
                                 </TableCell>
-                                <TableCell className="font-mono text-xs">
-                                    {log.performedByUserId}
+                                <TableCell>
+                                    {/* Hier wird nun die Username-Komponente gerendert */}
+                                    <Username userId={log.performedByUserId} />
                                 </TableCell>
                                 <TableCell>{log.message}</TableCell>
                             </TableRow>
@@ -194,7 +226,8 @@ export function AuditLogs() {
                 </TableBody>
             </Table>
 
-            <div className="flex items-center justify-between text-sm text-muted-foreground">
+            <div className="flex items-center justify-between text-sm text-
+muted-foreground">
                 <div className="flex items-center gap-2">
                     <span>Rows per page</span>
                     <Select

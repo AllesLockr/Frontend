@@ -76,7 +76,7 @@ export function AppSidebar() {
             id: "system",
             elements: [
                 { id: "vendors", icon: Network, name: "Vendors", path: "/vendors" },
-                { id: "logs", icon: BookText, name: "Logs", path: "/audit-logs" },
+                { id: "audit-logs", icon: BookText, name: "Audit-Logs", path: "/audit-logs" },
             ],
         },
     ]
