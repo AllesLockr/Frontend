@@ -119,6 +119,7 @@ export function AuditLogs() {
             if (page !== 0) {
                 currentPage = 0
                 setPage(0)
+                return
             }
         }
 
@@ -131,15 +132,14 @@ export function AuditLogs() {
 
     return (
         <div className="space-y-4">
-            <section className="flex flex-col gap-4 sm:flex-row sm:items-center 
-sm:justify-between">
+            <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <h2 className="text-2xl font-semibold">Audit Logs</h2>
                 <div className="flex flex-wrap items-center gap-3">
                     <div className="relative w-64">
-                        <Search className="absolute top-1/2 left-3 h-4 w-4 
--translate-y-1/2 text-muted-foreground" />
+                        <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
                             placeholder="Filter by User ID..."
+                            aria-label="Filter by User ID"
                             className="pl-9"
                             value={performedByUserId}
                             onChange={(e) =>
@@ -148,10 +148,10 @@ sm:justify-between">
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-
-foreground">From:</span>
+                        <span className="text-xs text-muted-foreground">From:</span>
                         <Input
                             type="date"
+                            aria-label="From date"
                             className="w-40"
                             value={fromDate}
                             onChange={(e) => setFromDate(e.target.value)}
@@ -159,10 +159,10 @@ foreground">From:</span>
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-
-foreground">To:</span>
+                        <span className="text-xs text-muted-foreground">To:</span>
                         <Input
                             type="date"
+                            aria-label="To date"
                             className="w-40"
                             value={toDate}
                             onChange={(e) => setToDate(e.target.value)}
@@ -224,15 +224,14 @@ foreground">To:</span>
                 </TableBody>
             </Table>
 
-            <div className="flex items-center justify-between text-sm text-
-muted-foreground">
+            <div className="flex items-center justify-between text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
                     <span>Rows per page</span>
                     <Select
                         value={String(size)}
                         onValueChange={(val) => setSize(Number(val))}
                     >
-                        <SelectTrigger className="w-20">
+                        <SelectTrigger className="w-20" aria-label="Rows per page">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
