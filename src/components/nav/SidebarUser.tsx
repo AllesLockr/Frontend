@@ -16,6 +16,7 @@ import {
 import { useAuth } from "@/context/AuthContext.tsx"
 import { useNavigate } from "react-router"
 import { useQueryClient } from "@tanstack/react-query"
+import { Badge } from "@/components/ui/badge.tsx"
 
 export function SidebarUser() {
     const { logout, user } = useAuth()
@@ -67,12 +68,7 @@ export function SidebarUser() {
                                 </Avatar>
                                 <div className="grid flex-1 text-left text-sm leading-tight">
                                     <div className="flex items-center gap-2">
-                                        <span className="truncate font-medium">
-                                            {`${user?.firstname ?? "N/A"} ${user?.lastname ?? "N/A"}`}
-                                        </span>
-                                        <span className="rounded-sm bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
-                                            {user?.role ?? "N/A"}
-                                        </span>
+                                        <Badge>{user?.role ?? "N/A"}</Badge>
                                     </div>
 
                                     <span className="truncate text-xs text-muted-foreground">

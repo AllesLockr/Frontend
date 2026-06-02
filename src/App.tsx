@@ -6,6 +6,7 @@ import React from "react"
 import { Persons } from "@/page/Persons.tsx"
 import { PageLayout } from "@/components/PageLayout.tsx"
 import { AuditLogs } from "./page/AuditLogs"
+import { Users } from "@/page/Users.tsx"
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { isAuthenticated } = useAuth()
@@ -49,6 +50,14 @@ export function App() {
                         element={
                             <ProtectedRoute>
                                 <AuditLogs />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/users"
+                        element={
+                            <ProtectedRoute>
+                                <Users />
                             </ProtectedRoute>
                         }
                     />
