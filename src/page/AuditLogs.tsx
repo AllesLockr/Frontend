@@ -87,13 +87,15 @@ export function AuditLogs() {
             size !== prevFiltersRef.current.size
 
         if (filtersChanged) {
-            currentPage = 0
-            setPage(0)
             prevFiltersRef.current = {
                 performedByUserId: debouncedPerformedByUserId,
                 fromDate: debouncedFromDate,
                 toDate: debouncedToDate,
                 size,
+            }
+            if (page !== 0) {
+                currentPage = 0
+                setPage(0)
             }
         }
 
