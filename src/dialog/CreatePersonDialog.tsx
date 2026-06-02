@@ -54,9 +54,12 @@ export function CreatePersonDialog({ onSuccess }: CreatePersonDialogProps) {
 
             setIsOpen(false)
             onSuccess()
-        } catch (error: any) {
+        } catch (error: unknown) {
             const errorMessage =
-                error?.message || "An unexpected error occurred."
+                error instanceof Error
+                    ? error.message
+                    : "An unexpected error occurred."
+
             setApiError(errorMessage)
         }
     }

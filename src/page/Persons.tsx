@@ -28,31 +28,45 @@ export function Persons() {
     const [page, setPage] = useState(0)
     const [size, setSize] = useState(10)
     const [search, setSearch] = useState("")
+    const [debouncedSearch, setDebouncedSearch] = useState("")
 
     const { data, error, mutate, isPending } = useMutation(
         getPersonsPagedMutation()
     )
 
-    const prevSearchRef = useRef(search)
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(search)
+        }, 300)
+
+        return () => clearTimeout(timer)
+    }, [search])
+
+    const prevSearchRef = useRef(debouncedSearch)
     const prevSizeRef = useRef(size)
 
     const fetchPersons = (currentPage = page) => {
-        const filter: PersonFilterSchema = search ? { search } : {}
+        const filter: PersonFilterSchema = debouncedSearch
+            ? { search: debouncedSearch }
+            : {}
         mutate({ body: { filter, page: currentPage, size } })
     }
 
     useEffect(() => {
         let currentPage = page
 
-        if (search !== prevSearchRef.current || size !== prevSizeRef.current) {
+        if (
+            debouncedSearch !== prevSearchRef.current ||
+            size !== prevSizeRef.current
+        ) {
             currentPage = 0
             setPage(0)
-            prevSearchRef.current = search
+            prevSearchRef.current = debouncedSearch
             prevSizeRef.current = size
         }
 
         fetchPersons(currentPage)
-    }, [page, size, search])
+    }, [page, size, debouncedSearch])
 
     const pageInfo = data?.page
     const persons = pageInfo?.content ?? []
@@ -64,6 +78,7 @@ export function Persons() {
                 <div className="flex items-center gap-2">
                     <div className="relative w-64">
                         <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                        {/* Input bleibt reaktiv und direkt an 'search' gebunden */}
                         <Input
                             placeholder="Search by name or email..."
                             className="pl-9"
@@ -71,7 +86,6 @@ export function Persons() {
                             onChange={(e) => setSearch(e.target.value)}
                         />
                     </div>
-
                     <CreatePersonDialog onSuccess={() => fetchPersons()} />
                 </div>
             </section>
