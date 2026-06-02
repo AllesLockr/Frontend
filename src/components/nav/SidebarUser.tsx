@@ -3,7 +3,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar.tsx"
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar.tsx"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar.tsx"
 import { EllipsisVertical, LogOut, SettingsIcon } from "lucide-react"
 import {
     DropdownMenuTrigger,
