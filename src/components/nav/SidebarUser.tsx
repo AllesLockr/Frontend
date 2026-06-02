@@ -61,8 +61,8 @@ export function SidebarUser() {
                             <div className="flex items-center gap-2">
                                 <Avatar className="h-8 w-8 rounded-lg grayscale">
                                     <AvatarFallback className="rounded-lg">
-                                        {user?.firstname[0] ?? "N"}
-                                        {user?.lastname[0] ?? "A"}
+                                        {user?.firstname?.[0] ?? "N"}
+                                        {user?.lastname?.[0] ?? "A"}
                                     </AvatarFallback>
                                 </Avatar>
                                 <div className="grid flex-1 text-left text-sm leading-tight">
