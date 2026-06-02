@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select"
 import {
     getAllAuditLogsPagedMutation,
-    getUserOptions // Importiert die generierten Query-Optionen für den User-Endpoint
+    getUserOptions
 } from "@/client/@tanstack/react-query.gen.ts"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useEffect, useRef, useState } from "react"
@@ -26,7 +26,6 @@ import type { AuditLogFilterDto } from "@/client/types.gen.ts"
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50, 100]
 
-// Hilfskomponente zum Laden und Anzeigen des Usernamens
 function Username({ userId }: { userId: string }) {
     const { data, isLoading, error } = useQuery(
         getUserOptions({
@@ -39,7 +38,6 @@ function Username({ userId }: { userId: string }) {
     }
 
     if (error || !data) {
-        // Fallback auf die User-ID, falls der Benutzer gelöscht wurde oder ein Fehler auftritt
         return <span className="font-mono text-xs text-muted-foreground">{userId}</span>
     }
 
