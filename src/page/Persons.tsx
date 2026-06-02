@@ -20,6 +20,7 @@ import { useMutation } from "@tanstack/react-query"
 import { useEffect, useRef, useState } from "react"
 import { ChevronLeft, ChevronRight, Search } from "lucide-react"
 import type { PersonFilterSchema } from "@/client/types.gen.ts"
+import { CreatePersonDialog } from "@/dialog/CreatePersonDialog.tsx"
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50, 100]
 
@@ -35,6 +36,11 @@ export function Persons() {
     const prevSearchRef = useRef(search)
     const prevSizeRef = useRef(size)
 
+    const fetchPersons = (currentPage = page) => {
+        const filter: PersonFilterSchema = search ? { search } : {}
+        mutate({ body: { filter, page: currentPage, size } })
+    }
+
     useEffect(() => {
         let currentPage = page
 
@@ -45,8 +51,7 @@ export function Persons() {
             prevSizeRef.current = size
         }
 
-        const filter: PersonFilterSchema = search ? { search } : {}
-        mutate({ body: { filter, page: currentPage, size } })
+        fetchPersons(currentPage)
     }, [page, size, search])
 
     const pageInfo = data?.page
@@ -56,14 +61,18 @@ export function Persons() {
         <div className="space-y-4">
             <section className="flex items-center justify-between">
                 <h2 className="text-2xl font-semibold">Persons</h2>
-                <div className="relative w-64">
-                    <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                        placeholder="Search by name or email..."
-                        className="pl-9"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                    />
+                <div className="flex items-center gap-2">
+                    <div className="relative w-64">
+                        <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                        <Input
+                            placeholder="Search by name or email..."
+                            className="pl-9"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                    </div>
+
+                    <CreatePersonDialog onSuccess={() => fetchPersons()} />
                 </div>
             </section>
 
