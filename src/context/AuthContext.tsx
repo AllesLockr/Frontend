@@ -35,6 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             })
 
             if (error || !data) {
+                console.log(error)
                 throw new Error(getFriendlyErrorMessage(response.status))
             }
 
