@@ -87,7 +87,7 @@ export function SidebarUser( {user = testUser}: SidebarUserProps) {
                                         <span className="truncate font-medium">
                                             {user.name}
                                         </span>
-                                        <span className="py -0.5 rounded-sm bg-primary/10 px-1.5 text-[10px] font-semibold text-primary">
+                                        <span className="py-0.5 rounded-sm bg-primary/10 px-1.5 text-[10px] font-semibold text-primary">
                                             {user.role}
                                         </span>
                                     </div>
