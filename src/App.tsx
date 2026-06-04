@@ -6,6 +6,8 @@ import React from "react"
 import { Persons } from "@/page/Persons.tsx"
 import { PageLayout } from "@/components/PageLayout.tsx"
 import { AuditLogs } from "./page/AuditLogs"
+import { UserSettings } from "@/page/UserSettings.tsx"
+import { Toaster } from "sonner"
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { isAuthenticated } = useAuth()
@@ -21,6 +23,7 @@ export function App() {
     return (
         <AuthProvider>
             <div className="flex h-screen w-screen flex-1 items-center justify-center">
+                <Toaster richColors position="top-center"/>
                 <Routes>
                     <Route
                         path="/"
@@ -52,6 +55,15 @@ export function App() {
                             </ProtectedRoute>
                         }
                     />
+
+                    <Route
+                        path="/user-settings"
+                        element={
+                            <ProtectedRoute>
+                                <UserSettings />
+                            </ProtectedRoute>
+                        }
+                    ></Route>
                 </Routes>
             </div>
         </AuthProvider>
