@@ -82,7 +82,9 @@ export function SidebarUser() {
                             </div>
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>
+                        <DropdownMenuItem
+                            onSelect={() => navigate("/user-settings")}
+                        >
                             <SettingsIcon className="size-4" />
                             Einstellungen
                         </DropdownMenuItem>
