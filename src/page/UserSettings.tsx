@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useMutation } from "@tanstack/react-query"
 import { resetPasswordMutation } from "@/client/@tanstack/react-query.gen.ts"
 import { toast } from "sonner"
+import type { ErrorResponse } from "@/client"
 
 export function UserSettings() {
     const { user, updateToken } = useAuth()
@@ -42,11 +43,21 @@ export function UserSettings() {
                             "Your password has been updated successfully.",
                     })
                 },
-                onError: () => {
-                    toast.error("Failed to change password", {
-                        description:
-                            "The current password you entered is incorrect.",
-                    })
+                onError: (error: ErrorResponse) => {
+                    const status = error?.status
+
+                    if (status === 401) {
+                        toast.error("Failed to change password", {
+                            description:
+                                "The current password you entered is incorrect.",
+                        })
+                    } else {
+                        toast.error("Failed to change password", {
+                            description:
+                                error.message ??
+                                "Something went wrong. Please try again.",
+                        })
+                    }
                 },
             }
         )

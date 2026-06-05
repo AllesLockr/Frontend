@@ -7,7 +7,7 @@ import { Persons } from "@/page/Persons.tsx"
 import { PageLayout } from "@/components/PageLayout.tsx"
 import { AuditLogs } from "./page/AuditLogs"
 import { UserSettings } from "@/page/UserSettings.tsx"
-import { Toaster } from "sonner"
+import { Toaster } from "@/components/ui/sonner.tsx"
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { isAuthenticated } = useAuth()
