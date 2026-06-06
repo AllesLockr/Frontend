@@ -24,7 +24,7 @@ export function UserLogin() {
                 err instanceof Error
                     ? err.message
                     : "An unexpected error occurred"
-            toast.error("Fehler beim Einloggen", {
+            toast.error("Login failed", {
                 description: errorMessage,
             })
         }
@@ -40,12 +40,12 @@ export function UserLogin() {
                 <FieldGroup>
                     <Field>
                         <FieldLabel htmlFor="form-name" className="sr-only">
-                            Benutzername
+                            Username
                         </FieldLabel>
                         <Input
                             id="form-name"
                             type="text"
-                            placeholder="Benutzername"
+                            placeholder="Username"
                             required
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
@@ -53,12 +53,12 @@ export function UserLogin() {
                     </Field>
                     <Field>
                         <FieldLabel htmlFor="form-password" className="sr-only">
-                            Passwort
+                            Password
                         </FieldLabel>
                         <Input
                             id="form-password"
                             type="password"
-                            placeholder="Passwort"
+                            placeholder="Password"
                             required
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
@@ -66,7 +66,7 @@ export function UserLogin() {
                     </Field>
 
                     <Button type="submit" disabled={isLoading}>
-                        {isLoading ? "Einloggen..." : "Einloggen"}
+                        {isLoading ? "Signing in..." : "Sign in"}
                     </Button>
                 </FieldGroup>
             </form>
