@@ -6,17 +6,16 @@ import React, { useState } from "react"
 import { useAuth } from "@/context/AuthContext.tsx"
 import { Card } from "@/components/ui/card.tsx"
 import { useNavigate } from "react-router"
+import { toast } from "sonner"
 
 export function UserLogin() {
     const { login, isLoading } = useAuth()
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
-    const [error, setError] = useState<string | null>(null)
     const navigate = useNavigate()
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        setError(null)
         try {
             await login(username, password)
             navigate("/dashboard")
@@ -25,7 +24,9 @@ export function UserLogin() {
                 err instanceof Error
                     ? err.message
                     : "An unexpected error occurred"
-            setError(errorMessage)
+            toast.error("Fehler beim Einloggen", {
+                description: errorMessage,
+            })
         }
     }
 
@@ -63,14 +64,6 @@ export function UserLogin() {
                             onChange={(e) => setPassword(e.target.value)}
                         />
                     </Field>
-
-                    <div className="mb-2 min-h-12">
-                        {error && (
-                            <p className="text-sm text-red-500" role="alert">
-                                {error}
-                            </p>
-                        )}
-                    </div>
 
                     <Button type="submit" disabled={isLoading}>
                         {isLoading ? "Einloggen..." : "Einloggen"}
