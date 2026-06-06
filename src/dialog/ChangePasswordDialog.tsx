@@ -27,9 +27,8 @@ export function ChangePasswordDialog() {
 
     const handleChangePassword = () => {
         if (newPassword !== confirmPassword) {
-            toast.error("Passwörter stimmen nicht überein", {
-                description:
-                    "Bitte stelle sicher, dass beide Passwörter identisch sind.",
+            toast.error("Passwords do not match", {
+                description: "Please make sure both passwords are identical.",
             })
             return
         }
@@ -39,18 +38,20 @@ export function ChangePasswordDialog() {
             {
                 onSuccess: (data) => {
                     updateToken(data.jwtToken)
+                    setOldPassword("")
+                    setNewPassword("")
+                    setConfirmPassword("")
                     queryClient.invalidateQueries({
                         queryKey: ["user", userId],
                     })
-                    toast.success("Passwort geändert")
+                    toast.success("Password changed")
                 },
                 onError: (error: ErrorResponse) => {
                     if (error?.status === 401) {
-                        toast.error("Aktuelles Passwort ist falsch")
+                        toast.error("Current password is incorrect")
                     } else {
-                        toast.error("Fehler beim Ändern des Passworts", {
-                            description:
-                                error.message ?? "Bitte versuche es erneut.",
+                        toast.error("Failed to change password", {
+                            description: error.message ?? "Please try again.",
                         })
                     }
                 },
@@ -64,21 +65,21 @@ export function ChangePasswordDialog() {
             onOpenChange={() => {}}
         >
             <DialogContent
+                showCloseButton={false}
                 onPointerDownOutside={(e) => e.preventDefault()}
                 onEscapeKeyDown={(e) => e.preventDefault()}
                 className="sm:max-w-md"
             >
                 <DialogHeader>
-                    <DialogTitle>Passwort ändern</DialogTitle>
+                    <DialogTitle>Change password</DialogTitle>
                     <DialogDescription>
-                        Du musst dein Passwort ändern, bevor du fortfahren
-                        kannst.
+                        You must change your password before you can continue.
                     </DialogDescription>
                 </DialogHeader>
 
                 <div className="space-y-4">
                     <div className="space-y-2">
-                        <Label>Aktuelles Passwort</Label>
+                        <Label>Current password</Label>
                         <Input
                             type="password"
                             value={oldPassword}
@@ -86,7 +87,7 @@ export function ChangePasswordDialog() {
                         />
                     </div>
                     <div className="space-y-2">
-                        <Label>Neues Passwort</Label>
+                        <Label>New password</Label>
                         <Input
                             type="password"
                             value={newPassword}
@@ -94,7 +95,7 @@ export function ChangePasswordDialog() {
                         />
                     </div>
                     <div className="space-y-2">
-                        <Label>Neues Passwort bestätigen</Label>
+                        <Label>Confirm new password</Label>
                         <Input
                             type="password"
                             value={confirmPassword}
@@ -107,9 +108,7 @@ export function ChangePasswordDialog() {
                         onClick={handleChangePassword}
                         disabled={isPending}
                     >
-                        {isPending
-                            ? "Wird gespeichert..."
-                            : "Passwort speichern"}
+                        {isPending ? "Saving..." : "Save password"}
                     </Button>
                 </div>
             </DialogContent>
