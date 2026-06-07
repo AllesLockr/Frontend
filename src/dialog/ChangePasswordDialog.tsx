@@ -60,10 +60,7 @@ export function ChangePasswordDialog() {
     }
 
     return (
-        <Dialog
-            open={user?.mustChangePassword ?? false}
-            onOpenChange={() => {}}
-        >
+        <Dialog open={user?.mustChangePassword ?? false}>
             <DialogContent
                 showCloseButton={false}
                 onPointerDownOutside={(e) => e.preventDefault()}
@@ -81,6 +78,8 @@ export function ChangePasswordDialog() {
                     <div className="space-y-2">
                         <Label>Current password</Label>
                         <Input
+                            id="currentPassword"
+                            autoComplete="current-password"
                             type="password"
                             value={oldPassword}
                             onChange={(e) => setOldPassword(e.target.value)}
@@ -89,6 +88,8 @@ export function ChangePasswordDialog() {
                     <div className="space-y-2">
                         <Label>New password</Label>
                         <Input
+                            id="newPassword"
+                            autoComplete="new-password"
                             type="password"
                             value={newPassword}
                             onChange={(e) => setNewPassword(e.target.value)}
