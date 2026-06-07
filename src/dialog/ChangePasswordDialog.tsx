@@ -74,9 +74,17 @@ export function ChangePasswordDialog() {
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="space-y-4">
+                <form
+                    className="space-y-4"
+                    onSubmit={(e) => {
+                        e.preventDefault()
+                        handleChangePassword()
+                    }}
+                >
                     <div className="space-y-2">
-                        <Label>Current password</Label>
+                        <Label htmlFor="currentPassword">
+                            Current password
+                        </Label>
                         <Input
                             id="currentPassword"
                             autoComplete="current-password"
@@ -86,7 +94,7 @@ export function ChangePasswordDialog() {
                         />
                     </div>
                     <div className="space-y-2">
-                        <Label>New password</Label>
+                        <Label htmlFor="newPassword">New password</Label>
                         <Input
                             id="newPassword"
                             autoComplete="new-password"
@@ -96,8 +104,12 @@ export function ChangePasswordDialog() {
                         />
                     </div>
                     <div className="space-y-2">
-                        <Label>Confirm new password</Label>
+                        <Label htmlFor="confirmPassword">
+                            Confirm new password
+                        </Label>
                         <Input
+                            id="confirmPassword"
+                            autoComplete="new-password"
                             type="password"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
@@ -105,13 +117,13 @@ export function ChangePasswordDialog() {
                     </div>
 
                     <Button
+                        type="submit"
                         className="w-full"
-                        onClick={handleChangePassword}
                         disabled={isPending}
                     >
                         {isPending ? "Saving..." : "Save password"}
                     </Button>
-                </div>
+                </form>
             </DialogContent>
         </Dialog>
     )
