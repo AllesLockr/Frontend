@@ -6,17 +6,16 @@ import React, { useState } from "react"
 import { useAuth } from "@/context/AuthContext.tsx"
 import { Card } from "@/components/ui/card.tsx"
 import { useNavigate } from "react-router"
+import { toast } from "sonner"
 
 export function UserLogin() {
     const { login, isLoading } = useAuth()
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
-    const [error, setError] = useState<string | null>(null)
     const navigate = useNavigate()
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        setError(null)
         try {
             await login(username, password)
             navigate("/dashboard")
@@ -25,7 +24,9 @@ export function UserLogin() {
                 err instanceof Error
                     ? err.message
                     : "An unexpected error occurred"
-            setError(errorMessage)
+            toast.error("Login failed", {
+                description: errorMessage,
+            })
         }
     }
 
@@ -39,12 +40,12 @@ export function UserLogin() {
                 <FieldGroup>
                     <Field>
                         <FieldLabel htmlFor="form-name" className="sr-only">
-                            Benutzername
+                            Username
                         </FieldLabel>
                         <Input
                             id="form-name"
                             type="text"
-                            placeholder="Benutzername"
+                            placeholder="Username"
                             required
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
@@ -52,28 +53,20 @@ export function UserLogin() {
                     </Field>
                     <Field>
                         <FieldLabel htmlFor="form-password" className="sr-only">
-                            Passwort
+                            Password
                         </FieldLabel>
                         <Input
                             id="form-password"
                             type="password"
-                            placeholder="Passwort"
+                            placeholder="Password"
                             required
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
                     </Field>
 
-                    <div className="mb-2 min-h-12">
-                        {error && (
-                            <p className="text-sm text-red-500" role="alert">
-                                {error}
-                            </p>
-                        )}
-                    </div>
-
                     <Button type="submit" disabled={isLoading}>
-                        {isLoading ? "Einloggen..." : "Einloggen"}
+                        {isLoading ? "Signing in..." : "Sign in"}
                     </Button>
                 </FieldGroup>
             </form>
