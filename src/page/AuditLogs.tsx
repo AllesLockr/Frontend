@@ -23,10 +23,11 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import { useEffect, useRef, useState } from "react"
 import { ChevronLeft, ChevronRight, Search } from "lucide-react"
 import type { AuditLogFilterDto } from "@/client/types.gen.ts"
+import { formatDate } from "@/lib/utils"
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50, 100]
 
-function Username({ userId }: { userId: string }) {
+export function Username({ userId }: { userId: string }) {
     const { data, isLoading, error } = useQuery(
         getUserOptions({
             path: { id: userId },
@@ -211,7 +212,7 @@ export function AuditLogs() {
                         auditLogs.map((log) => (
                             <TableRow key={log.id}>
                                 <TableCell className="whitespace-nowrap">
-                                    {new Date(log.createdAt).toLocaleString()}
+                                    {formatDate(log.createdAt)}
                                 </TableCell>
                                 <TableCell>
                                     {/* Hier wird nun die Username-Komponente gerendert */}

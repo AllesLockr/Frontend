@@ -8,6 +8,7 @@ interface AuthContextType {
     token: string | null
     userId: string | null
     user: UserSchema | null
+    updateToken: (newToken: string) => void
     login: (username: string, password: string) => Promise<void>
     logout: () => void
     isLoading: boolean
@@ -37,6 +38,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         },
         enabled: !!userId,
     })
+
+    const updateToken = useCallback((newToken: string) => {
+        setToken(newToken)
+        client.setConfig({ headers: { Authorization: `Bearer ${newToken}` } })
+        localStorage.setItem("auth_token", newToken)
+    }, [])
 
     const login = useCallback(async (username: string, password: string) => {
         setIsLoading(true)
@@ -81,6 +88,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 token: token,
                 userId: userId,
                 user: user ?? null,
+                updateToken: updateToken,
                 login: login,
                 logout: logout,
                 isLoading: isLoading,
