@@ -7,6 +7,7 @@ import { Persons } from "@/page/Persons.tsx"
 import { PageLayout } from "@/components/PageLayout.tsx"
 import { AuditLogs } from "./page/AuditLogs"
 import { UserSettings } from "@/page/UserSettings.tsx"
+import { Vendors } from "@/page/Vendors.tsx"
 import { Toaster } from "@/components/ui/sonner.tsx"
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -23,7 +24,7 @@ export function App() {
     return (
         <AuthProvider>
             <div className="flex h-screen w-screen flex-1 items-center justify-center">
-                <Toaster richColors position="top-center"/>
+                <Toaster richColors position="top-center" />
                 <Routes>
                     <Route
                         path="/"
@@ -64,6 +65,14 @@ export function App() {
                             </ProtectedRoute>
                         }
                     ></Route>
+                    <Route
+                        path="/vendors"
+                        element={
+                            <ProtectedRoute>
+                                <Vendors />
+                            </ProtectedRoute>
+                        }
+                    />
                 </Routes>
             </div>
         </AuthProvider>
