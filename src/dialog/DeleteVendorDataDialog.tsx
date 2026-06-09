@@ -26,9 +26,9 @@ export function DeleteVendorDataDialog({
                     id: vendorData.id,
                 },
             })
+            onSuccess()
             setIsOpen(false)
             toast.success("Vendor data deleted successfully")
-            onSuccess()
         } catch (error: unknown) {
             const errorMessage =
                 error instanceof Error
