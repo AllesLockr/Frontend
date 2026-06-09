@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatDate } from "@/lib/utils"
 import { CreateVendorDataDialog } from "@/dialog/CreateVendorDataDialog.tsx"
+import { EditVendorDataDialog } from "@/dialog/EditVendorDataDialog.tsx"
 import { VendorStatusBadge } from "@/components/VendorStatusBadge"
 import {
     getAllVendorDataOptions,
@@ -48,11 +49,21 @@ export function Vendors() {
                             <CardHeader className="pb-2">
                                 <div className="flex items-center justify-between">
                                     <CardTitle>{vendor.forApi}</CardTitle>
-                                    <VendorStatusBadge
-                                        vendorConnectionState={
-                                            vendor.vendorConnectionState
-                                        }
-                                    />
+                                    <div className="flex items-center gap-2">
+                                        <VendorStatusBadge
+                                            vendorConnectionState={
+                                                vendor.vendorConnectionState
+                                            }
+                                        />
+                                        <EditVendorDataDialog
+                                            vendorData={vendor}
+                                            onSuccess={() =>
+                                                queryClient.invalidateQueries({
+                                                    queryKey: getAllVendorDataQueryKey(),
+                                                })
+                                            }
+                                        />
+                                    </div>
                                 </div>
                             </CardHeader>
                             <CardContent>
