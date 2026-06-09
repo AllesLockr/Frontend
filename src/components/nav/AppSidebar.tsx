@@ -79,6 +79,12 @@ export function AppSidebar() {
                 { id: "audit-logs", icon: BookText, name: "Audit-Logs", path: "/audit-logs" },
             ],
         },
+        {
+            id: "admin",
+            elements: [
+                { id: "users", icon: Users, name: "Users", path: "/users" },
+            ],
+        }
     ]
 
     return (

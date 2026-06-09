@@ -9,6 +9,7 @@ import { AuditLogs } from "./page/AuditLogs"
 import { UserSettings } from "@/page/UserSettings.tsx"
 import { Vendors } from "@/page/Vendors.tsx"
 import { Toaster } from "@/components/ui/sonner.tsx"
+import { Users } from "@/page/Users.tsx"
 import { ChangePasswordDialog } from "@/dialog/ChangePasswordDialog.tsx"
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -59,6 +60,14 @@ export function App() {
                         element={
                             <ProtectedRoute>
                                 <AuditLogs />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/users"
+                        element={
+                            <ProtectedRoute>
+                                <Users />
                             </ProtectedRoute>
                         }
                     />
