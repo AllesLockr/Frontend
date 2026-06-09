@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatDate } from "@/lib/utils"
 import { CreateVendorDataDialog } from "@/dialog/CreateVendorDataDialog.tsx"
 import { EditVendorDataDialog } from "@/dialog/EditVendorDataDialog.tsx"
+import { DeleteVendorDataDialog } from "@/dialog/DeleteVendorDataDialog.tsx"
 import { VendorStatusBadge } from "@/components/VendorStatusBadge"
 import {
     getAllVendorDataOptions,
@@ -56,6 +57,14 @@ export function Vendors() {
                                             }
                                         />
                                         <EditVendorDataDialog
+                                            vendorData={vendor}
+                                            onSuccess={() =>
+                                                queryClient.invalidateQueries({
+                                                    queryKey: getAllVendorDataQueryKey(),
+                                                })
+                                            }
+                                        />
+                                        <DeleteVendorDataDialog
                                             vendorData={vendor}
                                             onSuccess={() =>
                                                 queryClient.invalidateQueries({
