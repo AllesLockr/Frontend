@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import {
     Select,
     SelectContent,
@@ -23,6 +23,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { implementedVendorsOptions, addVendorDataMutation } from "@/client/@tanstack/react-query.gen.ts"
+import type { AddVendorDataRequestSchema } from "@/client"
 
 interface CreateVendorDataDialogProps {
     onSuccess: () => void
@@ -32,12 +33,11 @@ export function CreateVendorDataDialog({ onSuccess }: CreateVendorDataDialogProp
     const [isOpen, setIsOpen] = useState(false)
     const [apiError, setApiError] = useState<string | null>(null)
     const [activeTab, setActiveTab] = useState("apiKey")
-    const queryClient = useQueryClient()
 
     const { mutateAsync, isPending } = useMutation(addVendorDataMutation())
 
     const { data: implementedVendorsData } = useQuery(
-        implementedVendorsOptions({}),
+        implementedVendorsOptions(),
     )
 
     const handleOpenChange = (open: boolean) => {
@@ -55,7 +55,7 @@ export function CreateVendorDataDialog({ onSuccess }: CreateVendorDataDialogProp
         const forApi = formData.get("forApi") as string
         const baseUrl = formData.get("baseUrl") as string
 
-        let payload: any = {
+        const payload: AddVendorDataRequestSchema = {
             forApi,
             baseUrl,
         }
@@ -80,7 +80,6 @@ export function CreateVendorDataDialog({ onSuccess }: CreateVendorDataDialogProp
             })
 
             setIsOpen(false)
-            queryClient.invalidateQueries({ queryKey: ["vendors"] })
             onSuccess()
         } catch (error: unknown) {
             const errorMessage =

@@ -9,12 +9,13 @@ import {
     TableRow,
 } from "@/components/ui/table"
 
-import { getAllAuditLogsPaged, getAllVendorData, getPersonsCount } from "@/client"
+import { getAllAuditLogsPaged, getPersonsCount } from "@/client"
 import { useQuery } from "@tanstack/react-query"
 import type { GetAllAuditLogsPagedRequestDto } from "@/client"
 import { Username } from "./AuditLogs"
 import { formatDate } from "@/lib/utils"
-import { VendorStatusBadge } from "./Vendors"
+import { VendorStatusBadge } from "@/components/VendorStatusBadge"
+import { getAllVendorDataOptions } from "@/client/@tanstack/react-query.gen.ts"
 
 export function Dashboard() {
     const { data: personCount } = useQuery({
@@ -27,10 +28,7 @@ export function Dashboard() {
         queryFn: () => getAllAuditLogsPaged({ body: { page: 0, size: 10 } as GetAllAuditLogsPagedRequestDto })
     })
 
-    const { data: vendors, isLoading: vendorsIsLoading, isError: vendorsHasError, error: vendorsDataError } = useQuery({
-        queryKey: ['vendors'],
-        queryFn: () => getAllVendorData()
-    })
+    const { data: vendors, isLoading: vendorsIsLoading, isError: vendorsHasError, error: vendorsDataError } = useQuery(getAllVendorDataOptions())
 
     return (
         <div className="flex flex-col gap-4">
@@ -58,7 +56,7 @@ export function Dashboard() {
                                 Loading...
                             </TableCell>
                         </TableRow>
-                    ) : vendorsHasError || !vendors?.data ? (
+                    ) : vendorsHasError || !vendors ? (
                         <TableRow>
                             <TableCell
                                 colSpan={3}
@@ -67,7 +65,7 @@ export function Dashboard() {
                                 {vendorsDataError instanceof Error ? vendorsDataError.message : 'An unknown error occurred.'}
                             </TableCell>
                         </TableRow>
-                    ) : vendors.data.length === 0 ? (
+                    ) : vendors.length === 0 ? (
                         <TableRow>
                             <TableCell
                                 colSpan={3}
@@ -77,7 +75,7 @@ export function Dashboard() {
                             </TableCell>
                         </TableRow>
                     ) : (
-                        vendors.data.map((vendor) => (
+                        vendors.map((vendor) => (
                             <TableRow key={vendor.id}>
                                 <TableCell><VendorStatusBadge vendorConnectionState={vendor.vendorConnectionState} /></TableCell>
                                 <TableCell>{vendor.forApi}</TableCell>
