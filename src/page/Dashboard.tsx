@@ -9,59 +9,13 @@ import {
     TableRow,
 } from "@/components/ui/table"
 
-import { getAllAuditLogsPaged, getAllVendorData, getPersonsCount } from "@/client"
+import { getAllAuditLogsPaged, getPersonsCount } from "@/client"
 import { useQuery } from "@tanstack/react-query"
 import type { GetAllAuditLogsPagedRequestDto } from "@/client"
 import { Username } from "./AuditLogs"
-import { Badge } from "@/components/ui/badge"
 import { formatDate } from "@/lib/utils"
-
-function VendorStatusBadge({
-    vendorConnectionState, }: {
-        vendorConnectionState: "CONNECTED" | "DISCONNECTED" | "AUTH_FAILED" | string;
-    }) {
-    const statusConfig = {
-        CONNECTED: {
-            label: "Connected",
-            dotColor: "bg-emerald-500",
-            pingColor: "bg-emerald-400",
-            badgeClass: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/10",
-        },
-        DISCONNECTED: {
-            label: "Disconnected",
-            dotColor: "bg-slate-500",
-            pingColor: "bg-slate-400",
-            badgeClass: "bg-slate-500/10 text-slate-700 dark:text-slate-400 border-slate-500/20 hover:bg-slate-500/10",
-        },
-        AUTH_FAILED: {
-            label: "Authorization failed",
-            dotColor: "bg-red-500",
-            pingColor: "bg-red-400",
-            badgeClass: "bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20 hover:bg-red-500/10",
-        },
-    };
-
-    const current = statusConfig[vendorConnectionState as keyof typeof statusConfig] || {
-        label: vendorConnectionState || "Unknown",
-        dotColor: "bg-gray-400",
-        pingColor: "bg-gray-300",
-        badgeClass: "bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-500/20 hover:bg-gray-500/10",
-    };
-
-    return (
-        <Badge
-            variant="outline"
-            className={`inline-flex items-center gap-2 font-medium px-2.5 py-0.5 rounded-full ${current.badgeClass}`}
-        >
-            {/* Pulsierender Kreis */}
-            <span className="relative flex h-2 w-2">
-                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${current.pingColor}`}></span>
-                <span className={`relative inline-flex rounded-full h-2 w-2 ${current.dotColor}`}></span>
-            </span>
-            {current.label}
-        </Badge>
-    );
-}
+import { VendorStatusBadge } from "@/components/VendorStatusBadge"
+import { getAllVendorDataOptions } from "@/client/@tanstack/react-query.gen.ts"
 
 export function Dashboard() {
     const { data: personCount } = useQuery({
@@ -74,10 +28,7 @@ export function Dashboard() {
         queryFn: () => getAllAuditLogsPaged({ body: { page: 0, size: 10 } as GetAllAuditLogsPagedRequestDto })
     })
 
-    const { data: vendors, isLoading: vendorsIsLoading, isError: vendorsHasError, error: vendorsDataError } = useQuery({
-        queryKey: ['vendors'],
-        queryFn: () => getAllVendorData()
-    })
+    const { data: vendors, isLoading: vendorsIsLoading, isError: vendorsHasError, error: vendorsDataError } = useQuery(getAllVendorDataOptions())
 
     return (
         <div className="flex flex-col gap-4">
@@ -105,7 +56,7 @@ export function Dashboard() {
                                 Loading...
                             </TableCell>
                         </TableRow>
-                    ) : vendorsHasError || !vendors?.data ? (
+                    ) : vendorsHasError || !vendors ? (
                         <TableRow>
                             <TableCell
                                 colSpan={3}
@@ -114,7 +65,7 @@ export function Dashboard() {
                                 {vendorsDataError instanceof Error ? vendorsDataError.message : 'An unknown error occurred.'}
                             </TableCell>
                         </TableRow>
-                    ) : vendors.data.length === 0 ? (
+                    ) : vendors.length === 0 ? (
                         <TableRow>
                             <TableCell
                                 colSpan={3}
@@ -124,7 +75,7 @@ export function Dashboard() {
                             </TableCell>
                         </TableRow>
                     ) : (
-                        vendors.data.map((vendor) => (
+                        vendors.map((vendor) => (
                             <TableRow key={vendor.id}>
                                 <TableCell><VendorStatusBadge vendorConnectionState={vendor.vendorConnectionState} /></TableCell>
                                 <TableCell>{vendor.forApi}</TableCell>
