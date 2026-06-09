@@ -8,15 +8,21 @@ import { PageLayout } from "@/components/PageLayout.tsx"
 import { AuditLogs } from "./page/AuditLogs"
 import { UserSettings } from "@/page/UserSettings.tsx"
 import { Toaster } from "@/components/ui/sonner.tsx"
+import { ChangePasswordDialog } from "@/dialog/ChangePasswordDialog.tsx"
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { isAuthenticated } = useAuth()
 
     if (!isAuthenticated) {
-        return <Navigate to={"/login"} replace />
+        return <Navigate to="/login" replace />
     }
 
-    return <PageLayout>{children}</PageLayout>
+    return (
+        <PageLayout>
+            <ChangePasswordDialog />
+            {children}
+        </PageLayout>
+    )
 }
 
 export function App() {
