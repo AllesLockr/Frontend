@@ -10,6 +10,7 @@ import { UserSettings } from "@/page/UserSettings.tsx"
 import { Vendors } from "@/page/Vendors.tsx"
 import { Toaster } from "@/components/ui/sonner.tsx"
 import { Users } from "@/page/Users.tsx"
+import { Locks } from "@/page/Locks.tsx"
 import { ChangePasswordDialog } from "@/dialog/ChangePasswordDialog.tsx"
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -85,6 +86,14 @@ export function App() {
                         element={
                             <ProtectedRoute>
                                 <Vendors />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/locks"
+                        element={
+                            <ProtectedRoute>
+                                <Locks />
                             </ProtectedRoute>
                         }
                     />
