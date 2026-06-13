@@ -249,6 +249,7 @@ export function UserDetail({
                                     onChange={(e) =>
                                         setFirstname(e.target.value)
                                     }
+                                    disabled={isEditPending}
                                 />
                             </div>
                             <div className="space-y-1.5">
@@ -258,6 +259,7 @@ export function UserDetail({
                                     onChange={(e) =>
                                         setLastname(e.target.value)
                                     }
+                                    disabled={isEditPending}
                                 />
                             </div>
                             <div className="space-y-1.5">
@@ -266,6 +268,7 @@ export function UserDetail({
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
+                                    disabled={isEditPending}
                                 />
                             </div>
                             <div className="flex gap-2 pt-1">
