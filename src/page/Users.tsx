@@ -22,6 +22,7 @@ import { ChevronLeft, ChevronRight, Search, UserRound } from "lucide-react"
 import type { UserFilterSchema } from "@/client/types.gen.ts"
 import { Badge } from "@/components/ui/badge.tsx"
 import { useAuth } from "@/context/AuthContext.tsx"
+import { UserDetail } from "@/dialog/UserDetail.tsx"
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50, 100]
 
@@ -30,6 +31,11 @@ export function Users() {
     const [size, setSize] = useState(10)
     const [search, setSearch] = useState("")
     const [debouncedSearch, setDebouncedSearch] = useState("")
+
+    const [selectedUser, setSelectedUser] = useState<
+        (typeof users)[number] | null
+    >(null)
+    const [detailOpen, setDetailOpen] = useState(false)
 
     const { data, error, mutate, isPending } = useMutation(
         getUsersPagedMutation()
@@ -74,6 +80,11 @@ export function Users() {
     const pageInfo = data?.page
     const users = pageInfo?.content ?? []
 
+    const handleRowClick = (user: (typeof users)[number]) => {
+        setSelectedUser(user)
+        setDetailOpen(true)
+    }
+
     return (
         <div className="space-y-4">
             <section className="flex items-center justify-between">
@@ -106,7 +117,7 @@ export function Users() {
                     {isPending ? (
                         <TableRow>
                             <TableCell
-                                colSpan={3}
+                                colSpan={6}
                                 className="text-center text-muted-foreground"
                             >
                                 Loading...
@@ -115,24 +126,28 @@ export function Users() {
                     ) : error ? (
                         <TableRow>
                             <TableCell
-                                colSpan={3}
+                                colSpan={6}
                                 className="text-center text-destructive"
                             >
-                                Failed to load persons. Please try again.
+                                Failed to load users. Please try again.
                             </TableCell>
                         </TableRow>
                     ) : users.length === 0 ? (
                         <TableRow>
                             <TableCell
-                                colSpan={3}
+                                colSpan={6}
                                 className="text-center text-muted-foreground"
                             >
-                                No persons found.
+                                No users found.
                             </TableCell>
                         </TableRow>
                     ) : (
                         users.map((user) => (
-                            <TableRow key={user.id}>
+                            <TableRow
+                                key={user.id}
+                                className="cursor-pointer"
+                                onClick={() => handleRowClick(user)}
+                            >
                                 <TableCell>{user.firstname}</TableCell>
                                 <TableCell>{user.lastname}</TableCell>
                                 <TableCell>{user.email}</TableCell>
@@ -146,14 +161,27 @@ export function Users() {
                                     )}
                                 </TableCell>
                                 <TableCell>
-                                    <Badge>{user?.role ?? "N/A"}</Badge>
+                                    <Badge
+                                        className={
+                                            user.role === "ADMIN"
+                                                ? "bg-violet-600 text-white hover:bg-violet-700"
+                                                : ""
+                                        }
+                                        variant={
+                                            user.role === "ADMIN"
+                                                ? "default"
+                                                : "secondary"
+                                        }
+                                    >
+                                        {user?.role ?? "N/A"}
+                                    </Badge>
                                 </TableCell>
                                 <TableCell>
                                     <Badge
                                         variant={
                                             user.isActive
                                                 ? "default"
-                                                : "secondary"
+                                                : "destructive"
                                         }
                                     >
                                         {user.isActive ? "Active" : "Inactive"}
@@ -185,7 +213,7 @@ export function Users() {
                     </Select>
                     <span>
                         {pageInfo
-                            ? `${pageInfo.totalElements} total persons`
+                            ? `${pageInfo.totalElements} total users`
                             : ""}
                     </span>
                 </div>
@@ -221,6 +249,13 @@ export function Users() {
                     </Button>
                 </div>
             </div>
+
+            <UserDetail
+                user={selectedUser}
+                open={detailOpen}
+                onOpenChange={setDetailOpen}
+                onRefresh={() => fetchUsers()}
+            />
         </div>
     )
 }
