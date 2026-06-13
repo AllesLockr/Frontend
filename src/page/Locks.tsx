@@ -21,7 +21,7 @@ import {
     syncLocksMutation,
 } from "@/client/@tanstack/react-query.gen.ts"
 import { useMutation } from "@tanstack/react-query"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { ChevronLeft, ChevronRight, RefreshCw, Search } from "lucide-react"
 import type { LockSchema } from "@/client/types.gen.ts"
 import { toast } from "sonner"
@@ -67,9 +67,12 @@ export function Locks() {
 
     const prevSizeRef = useRef(size)
 
-    const fetchLocks = (currentPage = page) => {
-        mutate({ body: { page: currentPage, size } })
-    }
+    const fetchLocks = useCallback(
+        (currentPage = page) => {
+            mutate({ body: { page: currentPage, size } })
+        },
+        [mutate, page, size]
+    )
 
     useEffect(() => {
         let currentPage = page
@@ -81,7 +84,7 @@ export function Locks() {
         }
 
         fetchLocks(currentPage)
-    }, [page, size])
+    }, [page, size, fetchLocks])
 
     const handleSync = async () => {
         try {
