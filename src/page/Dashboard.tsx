@@ -9,7 +9,7 @@ import {
     TableRow,
 } from "@/components/ui/table"
 
-import { getAllAuditLogsPaged, getPersonsCount } from "@/client"
+import { getAllAuditLogsPaged, getLocksCount, getPersonsCount } from "@/client"
 import { useQuery } from "@tanstack/react-query"
 import type { GetAllAuditLogsPagedRequestDto } from "@/client"
 import { Username } from "./AuditLogs"
@@ -23,6 +23,11 @@ export function Dashboard() {
         queryFn: () => getPersonsCount(),
     });
 
+    const { data: locksCount } = useQuery({
+        queryKey: ['locksCount'],
+        queryFn: () => getLocksCount(),
+    });
+
     const { data: auditLogs, isLoading: auditLogsIsLoading, isError: auditLogsHasError, error: auditLogsError } = useQuery({
         queryKey: ['auditLogs'],
         queryFn: () => getAllAuditLogsPaged({ body: { page: 0, size: 10 } as GetAllAuditLogsPagedRequestDto })
@@ -33,7 +38,7 @@ export function Dashboard() {
     return (
         <div className="flex flex-col gap-4">
             <div className="flex gap-8 max-md:flex-col">
-                <StatsCard title="TODO" description="Locks" icon={Lock} />
+                <StatsCard title={locksCount?.data?.count?.toString() ?? "N/A"} description="Locks" icon={Lock} />
                 <StatsCard title="TODO" description="Keys" icon={Key} />
                 <StatsCard title={personCount?.data?.count?.toString() ?? "N/A"} description="Persons" icon={User} />
                 <StatsCard title="TODO" description="Buildings" icon={Building} />
