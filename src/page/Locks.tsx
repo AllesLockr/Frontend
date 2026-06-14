@@ -20,7 +20,7 @@ import {
     syncLocksMutation,
 } from "@/client/@tanstack/react-query.gen.ts"
 import { useMutation } from "@tanstack/react-query"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { ChevronLeft, ChevronRight, RefreshCw } from "lucide-react"
 import type { LockSchema } from "@/client/types.gen.ts"
 import { toast } from "sonner"
@@ -64,26 +64,16 @@ export function Locks() {
     )
     const syncMutation = useMutation(syncLocksMutation())
 
-    const prevSizeRef = useRef(size)
-
     const fetchLocks = useCallback(
-        (currentPage = page) => {
+        (currentPage: number) => {
             mutate({ body: { page: currentPage, size } })
         },
-        [mutate, page, size]
+        [mutate, size]
     )
 
     useEffect(() => {
-        let currentPage = page
-
-        if (size !== prevSizeRef.current) {
-            currentPage = 0
-            setPage(0)
-            prevSizeRef.current = size
-        }
-
-        fetchLocks(currentPage)
-    }, [page, size, fetchLocks])
+        fetchLocks(page)
+    }, [page, fetchLocks])
 
     const handleSync = async () => {
         try {
@@ -213,7 +203,10 @@ export function Locks() {
                     <span>Rows per page</span>
                     <Select
                         value={String(size)}
-                        onValueChange={(val) => setSize(Number(val))}
+                        onValueChange={(val) => {
+                            setSize(Number(val))
+                            setPage(0)
+                        }}
                     >
                         <SelectTrigger className="w-20">
                             <SelectValue />
