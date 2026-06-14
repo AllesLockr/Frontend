@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import {
     Select,
     SelectContent,
@@ -22,7 +21,7 @@ import {
 } from "@/client/@tanstack/react-query.gen.ts"
 import { useMutation } from "@tanstack/react-query"
 import { useCallback, useEffect, useRef, useState } from "react"
-import { ChevronLeft, ChevronRight, RefreshCw, Search } from "lucide-react"
+import { ChevronLeft, ChevronRight, RefreshCw } from "lucide-react"
 import type { LockSchema } from "@/client/types.gen.ts"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
@@ -132,25 +131,6 @@ export function Locks() {
             <section className="flex items-center justify-between">
                 <h2 className="text-2xl font-semibold">Locks</h2>
                 {syncButton}
-            </section>
-
-            {/* TODO: searchbar, vendor filter; needs api impl beforehand */}
-            <section className="flex items-center gap-2">
-                <div className="relative w-64">
-                    <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                        placeholder="Search by name or serial number..."
-                        className="pl-9"
-                    />
-                </div>
-                <Select>
-                    <SelectTrigger className="w-40">
-                        <SelectValue placeholder="All vendors" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">All vendors</SelectItem>
-                    </SelectContent>
-                </Select>
             </section>
 
             <Table>
