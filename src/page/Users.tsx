@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select"
 import { getUsersPagedMutation } from "@/client/@tanstack/react-query.gen.ts"
 import { useMutation } from "@tanstack/react-query"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { ChevronLeft, ChevronRight, Search, UserRound } from "lucide-react"
 import type { UserFilterSchema } from "@/client/types.gen.ts"
 import { Badge } from "@/components/ui/badge.tsx"
@@ -53,12 +53,12 @@ export function Users() {
     const prevSearchRef = useRef(debouncedSearch)
     const prevSizeRef = useRef(size)
 
-    const fetchUsers = (currentPage = page) => {
+    const fetchUsers = useCallback((pageToFetch: number) => {
         const filter: UserFilterSchema = debouncedSearch
             ? { search: debouncedSearch }
             : {}
-        mutate({ body: { filter, page: currentPage, size } })
-    }
+        mutate({ body: { filter, page: pageToFetch, size } })
+    }, [debouncedSearch, size, mutate])
 
     useEffect(() => {
         let currentPage = page
@@ -74,7 +74,7 @@ export function Users() {
         }
 
         fetchUsers(currentPage)
-    }, [page, size, debouncedSearch])
+    }, [page, size, debouncedSearch, fetchUsers])
 
     const { user: currentUser } = useAuth()
 
@@ -102,7 +102,7 @@ export function Users() {
                         />
                     </div>
                     {currentUser?.role === "ADMIN" && (
-                        <CreateUserDialog onSuccess={() => fetchUsers()} />
+                        <CreateUserDialog onSuccess={() => fetchUsers(page)} />
                     )}
                 </div>
             </section>
@@ -259,7 +259,7 @@ export function Users() {
                 user={selectedUser}
                 open={detailOpen}
                 onOpenChange={setDetailOpen}
-                onRefresh={() => fetchUsers()}
+                onRefresh={() => fetchUsers(page)}
             />
         </div>
     )
