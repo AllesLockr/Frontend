@@ -1,8 +1,8 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Plus } from "lucide-react"
+import { Info, Plus } from "lucide-react"
 import {
     Dialog,
     DialogContent,
@@ -13,6 +13,12 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 import { useMutation, useQuery } from "@tanstack/react-query"
 import {
@@ -26,12 +32,15 @@ import {
     implementedVendorsOptions,
     addVendorDataMutation,
     updateVendorDataMutation,
+    getVendorSpecificDefinitionsOptions,
 } from "@/client/@tanstack/react-query.gen.ts"
 import type {
     AddVendorDataRequestSchema,
     UpdateVendorDataRequestSchema,
     GetVendorDataResponseDto,
+    MetadataEntrySchema,
 } from "@/client"
+import React from "react"
 
 interface CreateVendorDataDialogProps {
     onSuccess: () => void
@@ -61,11 +70,21 @@ export function CreateVendorDataDialog({
             return vendorData.apiKey
                 ? "apiKey"
                 : vendorData.apiUsername
-                  ? "baseAuth"
-                  : "apiKey"
+                    ? "baseAuth"
+                    : "apiKey"
         }
         return "apiKey"
     })
+
+    const [selectedVendor, setSelectedVendor] = useState(
+        isEdit && vendorData ? vendorData.forApi : "",
+    )
+
+    useEffect(() => {
+        if (isOpen && !isEdit) {
+            setSelectedVendor("")
+        }
+    }, [isOpen, isEdit])
 
     const createMutation = useMutation(addVendorDataMutation())
     const updateMutation = useMutation(updateVendorDataMutation())
@@ -74,6 +93,32 @@ export function CreateVendorDataDialog({
     const { data: implementedVendorsData } = useQuery(
         implementedVendorsOptions(),
     )
+
+    const { data: definitionsData } = useQuery({
+        ...getVendorSpecificDefinitionsOptions({
+            path: { forVendor: selectedVendor },
+        }),
+        enabled: !!selectedVendor,
+    })
+
+    const vendorSpecificFields = definitionsData?.vendorSpecificFields ?? []
+
+    const getMetadataValue = (fieldName: string) =>
+        vendorData?.metadata?.find((m) => m.key === fieldName)?.value ?? ""
+
+    const mapFieldType = (type: string) => {
+        switch (type) {
+            case "EMAIL":
+                return "email"
+            case "PASSWORD":
+                return "password"
+            case "NUMBER":
+                return "number"
+            case "TEXT":
+            default:
+                return "text"
+        }
+    }
 
     const handleOpenChange = (open: boolean) => {
         if (openProp !== undefined) {
@@ -91,6 +136,13 @@ export function CreateVendorDataDialog({
 
         const formData = new FormData(e.currentTarget)
         const baseUrl = formData.get("baseUrl") as string
+
+        const metadata: Array<MetadataEntrySchema> = vendorSpecificFields
+            .map((field) => ({
+                key: field.name,
+                value: formData.get(`metadata.${field.name}`) as string,
+            }))
+            .filter((entry) => entry.value)
 
         try {
             if (isEdit) {
@@ -115,6 +167,10 @@ export function CreateVendorDataDialog({
                     }
                 }
 
+                if (metadata.length > 0) {
+                    payload.metadata = metadata
+                }
+
                 await updateMutation.mutateAsync({
                     body: payload,
                 })
@@ -137,6 +193,10 @@ export function CreateVendorDataDialog({
                         payload.apiUsername = apiUsername
                         payload.apiPassword = apiPassword
                     }
+                }
+
+                if (metadata.length > 0) {
+                    payload.metadata = metadata
                 }
 
                 await createMutation.mutateAsync({
@@ -169,7 +229,7 @@ export function CreateVendorDataDialog({
                     </Button>
                 </DialogTrigger>
             ) : null}
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="max-w-[90vw] w-fit">
                 <form onSubmit={handleSubmit}>
                     <DialogHeader>
                         <DialogTitle>
@@ -192,9 +252,8 @@ export function CreateVendorDataDialog({
                                     name="forApi"
                                     required={!isEdit}
                                     disabled={isEdit}
-                                    defaultValue={
-                                        isEdit ? vendorData?.forApi : undefined
-                                    }
+                                    value={selectedVendor}
+                                    onValueChange={setSelectedVendor}
                                 >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select an API" />
@@ -308,6 +367,55 @@ export function CreateVendorDataDialog({
                                 </div>
                             </TabsContent>
                         </Tabs>
+
+                        {vendorSpecificFields.length > 0 && (
+                            <div className="space-y-4 border-t pt-4">
+                                <p className="text-sm font-medium text-muted-foreground">
+                                    Vendor-specific fields
+                                </p>
+                                <div className="grid grid-cols-[auto_1fr] items-center gap-4">
+                                    {vendorSpecificFields.map((field) => (
+                                        <React.Fragment
+                                            key={`${selectedVendor}-${field.name}`}
+                                        >
+                                            <Label
+                                                htmlFor={field.name}
+                                                className="text-right whitespace-nowrap pr-2"
+                                            >
+                                                {field.name}
+                                                {field.description && (
+                                                    <TooltipProvider>
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <span className="ml-1 inline-flex align-middle">
+                                                                    <Info className="h-3 w-3 text-muted-foreground cursor-help shrink-0" />
+                                                                </span>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                <p>{field.description}</p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    </TooltipProvider>
+                                                )}
+                                            </Label>
+                                            <Input
+                                                id={field.name}
+                                                name={`metadata.${field.name}`}
+                                                type={mapFieldType(field.type)}
+                                                required
+                                                defaultValue={
+                                                    isEdit
+                                                        ? getMetadataValue(
+                                                            field.name,
+                                                        )
+                                                        : undefined
+                                                }
+                                            />
+                                        </React.Fragment>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {apiError && (
