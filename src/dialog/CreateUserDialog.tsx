@@ -16,12 +16,14 @@ import {
 import { createUserMutation } from "@/client/@tanstack/react-query.gen.ts"
 import { useMutation } from "@tanstack/react-query"
 import { toast } from "sonner"
+import { useAuth } from "@/context/AuthContext.tsx"
 
 interface CreateUserDialogProps {
     onSuccess: () => void
 }
 
 export function CreateUserDialog({ onSuccess }: CreateUserDialogProps) {
+    const { user: currentUser } = useAuth()
     const [isOpen, setIsOpen] = useState(false)
     const [apiError, setApiError] = useState<string | null>(null)
     const [phase, setPhase] = useState<"form" | "result">("form")
@@ -29,6 +31,10 @@ export function CreateUserDialog({ onSuccess }: CreateUserDialogProps) {
     const [copied, setCopied] = useState(false)
 
     const { mutateAsync, isPending } = useMutation(createUserMutation())
+
+    if (currentUser?.role !== "ADMIN") {
+        return null
+    }
 
     const handleOpenChange = (open: boolean) => {
         if (!open) {
