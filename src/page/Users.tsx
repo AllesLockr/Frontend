@@ -23,6 +23,7 @@ import type { UserFilterSchema } from "@/client/types.gen.ts"
 import { Badge } from "@/components/ui/badge.tsx"
 import { useAuth } from "@/context/AuthContext.tsx"
 import { UserDetail } from "@/dialog/UserDetail.tsx"
+import { CreateUserDialog } from "@/dialog/CreateUserDialog.tsx"
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50, 100]
 
@@ -99,6 +100,7 @@ export function Users() {
                             onChange={(e) => setSearch(e.target.value)}
                         />
                     </div>
+                    <CreateUserDialog onSuccess={() => fetchUsers()} />
                 </div>
             </section>
 
