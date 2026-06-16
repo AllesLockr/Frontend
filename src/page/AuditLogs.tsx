@@ -49,12 +49,11 @@ export function AuditLogs() {
     const [page, setPage] = useState(0)
     const [size, setSize] = useState(10)
 
-    const [performedByUserId, setPerformedByUserId] = useState("")
+    const [searchText, setSearchText] = useState("")
     const [fromDate, setFromDate] = useState("")
     const [toDate, setToDate] = useState("")
 
-    const [debouncedPerformedByUserId, setDebouncedPerformedByUserId] =
-        useState("")
+    const [debouncedSearchText, setDebouncedSearchText] = useState("")
     const [debouncedFromDate, setDebouncedFromDate] = useState("")
     const [debouncedToDate, setDebouncedToDate] = useState("")
 
@@ -64,20 +63,20 @@ export function AuditLogs() {
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            setDebouncedPerformedByUserId(performedByUserId)
+            setDebouncedSearchText(searchText)
             setDebouncedFromDate(fromDate)
             setDebouncedToDate(toDate)
             setPage(0)
         }, 300)
 
         return () => clearTimeout(timer)
-    }, [performedByUserId, fromDate, toDate])
+    }, [searchText, fromDate, toDate])
 
     const fetchAuditLogs = useCallback((pageToFetch: number) => {
         const filter: AuditLogFilterDto = {}
 
-        if (debouncedPerformedByUserId) {
-            filter.performedByUserId = debouncedPerformedByUserId
+        if (debouncedSearchText) {
+            filter.searchText = debouncedSearchText
         }
 
         if (debouncedFromDate) {
@@ -91,7 +90,7 @@ export function AuditLogs() {
         }
 
         mutate({ body: { filter, page: pageToFetch, size } })
-    }, [debouncedPerformedByUserId, debouncedFromDate, debouncedToDate, size, mutate])
+    }, [debouncedSearchText, debouncedFromDate, debouncedToDate, size, mutate])
 
     useEffect(() => {
         fetchAuditLogs(page)
@@ -108,12 +107,12 @@ export function AuditLogs() {
                     <div className="relative w-64">
                         <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
-                            placeholder="Filter by User ID..."
-                            aria-label="Filter by User ID"
+                            placeholder="Suche nach Username oder Nachricht..."
+                            aria-label="Suche nach Username oder Nachricht"
                             className="pl-9"
-                            value={performedByUserId}
+                            value={searchText}
                             onChange={(e) =>
-                                setPerformedByUserId(e.target.value)}
+                                setSearchText(e.target.value)}
                         />
                     </div>
 
