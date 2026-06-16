@@ -186,6 +186,7 @@ export type {
     LoginResponses,
     LoginUserRequestSchema,
     LoginUserResponseSchema,
+    MetadataEntryDto,
     MetadataEntrySchema,
     PageGetAuditLogResponseDto,
     PageSchemaAccessGrantSchema,
