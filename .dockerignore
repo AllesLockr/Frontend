@@ -6,4 +6,4 @@ dist/
 .idea/
 .prettierrc
 .prettierignore
-.eslint.config.js
+eslint.config.js
