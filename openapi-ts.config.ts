@@ -7,7 +7,7 @@ export default defineConfig({
     format: "prettier",
   },
   plugins: [
-      "@hey-api/client-fetch",
+      { name: "@hey-api/client-fetch", baseUrl: "/api/v1" },
       "@tanstack/react-query"
   ],
 })
