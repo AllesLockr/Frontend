@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select"
 import { getPersonsPagedMutation } from "@/client/@tanstack/react-query.gen.ts"
 import { useMutation } from "@tanstack/react-query"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { ChevronLeft, ChevronRight, Search } from "lucide-react"
 import type { PersonFilterSchema } from "@/client/types.gen.ts"
 import { CreatePersonDialog } from "@/dialog/CreatePersonDialog.tsx"
@@ -45,12 +45,12 @@ export function Persons() {
     const prevSearchRef = useRef(debouncedSearch)
     const prevSizeRef = useRef(size)
 
-    const fetchPersons = (currentPage = page) => {
+    const fetchPersons = useCallback((pageToFetch: number) => {
         const filter: PersonFilterSchema = debouncedSearch
             ? { search: debouncedSearch }
             : {}
-        mutate({ body: { filter, page: currentPage, size } })
-    }
+        mutate({ body: { filter, page: pageToFetch, size } })
+    }, [debouncedSearch, size, mutate])
 
     useEffect(() => {
         let currentPage = page
@@ -66,7 +66,7 @@ export function Persons() {
         }
 
         fetchPersons(currentPage)
-    }, [page, size, debouncedSearch])
+    }, [page, size, debouncedSearch, fetchPersons])
 
     const pageInfo = data?.page
     const persons = pageInfo?.content ?? []
@@ -85,7 +85,7 @@ export function Persons() {
                             onChange={(e) => setSearch(e.target.value)}
                         />
                     </div>
-                    <CreatePersonDialog onSuccess={() => fetchPersons()} />
+                    <CreatePersonDialog onSuccess={() => fetchPersons(page)} />
                 </div>
             </section>
 

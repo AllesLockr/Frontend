@@ -20,7 +20,7 @@ import {
     getUserOptions
 } from "@/client/@tanstack/react-query.gen.ts"
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { ChevronLeft, ChevronRight, Search } from "lucide-react"
 import type { AuditLogFilterDto } from "@/client/types.gen.ts"
 import { formatDate } from "@/lib/utils"
@@ -67,19 +67,13 @@ export function AuditLogs() {
             setDebouncedPerformedByUserId(performedByUserId)
             setDebouncedFromDate(fromDate)
             setDebouncedToDate(toDate)
+            setPage(0)
         }, 300)
 
         return () => clearTimeout(timer)
     }, [performedByUserId, fromDate, toDate])
 
-    const prevFiltersRef = useRef({
-        performedByUserId: debouncedPerformedByUserId,
-        fromDate: debouncedFromDate,
-        toDate: debouncedToDate,
-        size,
-    })
-
-    const fetchAuditLogs = (currentPage = page) => {
+    const fetchAuditLogs = useCallback((pageToFetch: number) => {
         const filter: AuditLogFilterDto = {}
 
         if (debouncedPerformedByUserId) {
@@ -96,37 +90,12 @@ export function AuditLogs() {
             filter.toDate = date.toISOString()
         }
 
-        mutate({ body: { filter, page: currentPage, size } })
-    }
-
+        mutate({ body: { filter, page: pageToFetch, size } })
+    }, [debouncedPerformedByUserId, debouncedFromDate, debouncedToDate, size, mutate])
 
     useEffect(() => {
-        let currentPage = page
-
-        const filtersChanged =
-            debouncedPerformedByUserId !==
-            prevFiltersRef.current.performedByUserId ||
-            debouncedFromDate !== prevFiltersRef.current.fromDate ||
-            debouncedToDate !== prevFiltersRef.current.toDate ||
-            size !== prevFiltersRef.current.size
-
-        if (filtersChanged) {
-            prevFiltersRef.current = {
-                performedByUserId: debouncedPerformedByUserId,
-                fromDate: debouncedFromDate,
-                toDate: debouncedToDate,
-                size,
-            }
-            if (page !== 0) {
-                currentPage = 0
-                setPage(0)
-                return
-            }
-        }
-
-        fetchAuditLogs(currentPage)
-    }, [page, size, debouncedPerformedByUserId, debouncedFromDate,
-        debouncedToDate])
+        fetchAuditLogs(page)
+    }, [page, fetchAuditLogs])
 
     const pageInfo = data?.page
     const auditLogs = pageInfo?.content ?? []

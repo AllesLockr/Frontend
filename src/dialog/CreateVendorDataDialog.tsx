@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -80,12 +80,6 @@ export function CreateVendorDataDialog({
         isEdit && vendorData ? vendorData.forApi : "",
     )
 
-    useEffect(() => {
-        if (isOpen && !isEdit) {
-            setSelectedVendor("")
-        }
-    }, [isOpen, isEdit])
-
     const createMutation = useMutation(addVendorDataMutation())
     const updateMutation = useMutation(updateVendorDataMutation())
     const isPending = createMutation.isPending || updateMutation.isPending
@@ -121,6 +115,9 @@ export function CreateVendorDataDialog({
     }
 
     const handleOpenChange = (open: boolean) => {
+        if (open && !isEdit) {
+            setSelectedVendor("")
+        }
         if (openProp !== undefined) {
             onOpenChange?.(open)
         }
