@@ -126,6 +126,15 @@ export type UserFilterSchema = {
     search?: string
 }
 
+export type AdminResetPasswordUserResponseSchema = {
+    userId: string
+    password: string
+}
+
+export type AdminResetPasswordUserRequestSchema = {
+    userId: string
+}
+
 export type ActivateUserRequestSchema = {
     userId: string
 }
@@ -707,6 +716,45 @@ export type GetUsersPagedResponses = {
 
 export type GetUsersPagedResponse =
     GetUsersPagedResponses[keyof GetUsersPagedResponses]
+
+export type AdminResetPasswordData = {
+    body: AdminResetPasswordUserRequestSchema
+    path?: never
+    query?: never
+    url: "/api/v1/user/admin-reset-password"
+}
+
+export type AdminResetPasswordErrors = {
+    /**
+     * Invalid requestor or target user ID.
+     */
+    400: ErrorResponse
+    /**
+     * Requestor is not an admin.
+     */
+    401: ErrorResponse
+    /**
+     * Requestor or target user not found.
+     */
+    404: ErrorResponse
+    /**
+     * Something went wrong...rip
+     */
+    500: ErrorResponse
+}
+
+export type AdminResetPasswordError =
+    AdminResetPasswordErrors[keyof AdminResetPasswordErrors]
+
+export type AdminResetPasswordResponses = {
+    /**
+     * Password successfully reset.
+     */
+    201: AdminResetPasswordUserResponseSchema
+}
+
+export type AdminResetPasswordResponse =
+    AdminResetPasswordResponses[keyof AdminResetPasswordResponses]
 
 export type ActivateUserData = {
     body: ActivateUserRequestSchema

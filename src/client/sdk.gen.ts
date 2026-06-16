@@ -9,6 +9,9 @@ import type {
     AddVendorDataData,
     AddVendorDataErrors,
     AddVendorDataResponses,
+    AdminResetPasswordData,
+    AdminResetPasswordErrors,
+    AdminResetPasswordResponses,
     ChangeRoleData,
     ChangeRoleErrors,
     ChangeRoleResponses,
@@ -288,6 +291,25 @@ export const getUsersPaged = <ThrowOnError extends boolean = false>(
         ThrowOnError
     >({
         url: "/api/v1/user/all",
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            ...options.headers,
+        },
+    })
+
+/**
+ * Admin-reset a user's password (admin only). Generates a new password and returns it.
+ */
+export const adminResetPassword = <ThrowOnError extends boolean = false>(
+    options: Options<AdminResetPasswordData, ThrowOnError>
+) =>
+    (options.client ?? client).post<
+        AdminResetPasswordResponses,
+        AdminResetPasswordErrors,
+        ThrowOnError
+    >({
+        url: "/api/v1/user/admin-reset-password",
         ...options,
         headers: {
             "Content-Type": "application/json",

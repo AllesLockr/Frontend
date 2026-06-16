@@ -10,6 +10,7 @@ import { client } from "../client.gen"
 import {
     activateUser,
     addVendorData,
+    adminResetPassword,
     changeRole,
     createPerson,
     createUser,
@@ -45,6 +46,9 @@ import type {
     AddVendorDataData,
     AddVendorDataError,
     AddVendorDataResponse,
+    AdminResetPasswordData,
+    AdminResetPasswordError,
+    AdminResetPasswordResponse,
     ChangeRoleData,
     ChangeRoleError,
     CreatePersonData,
@@ -371,6 +375,33 @@ export const getUsersPagedMutation = (
     > = {
         mutationFn: async (fnOptions) => {
             const { data } = await getUsersPaged({
+                ...options,
+                ...fnOptions,
+                throwOnError: true,
+            })
+            return data
+        },
+    }
+    return mutationOptions
+}
+
+/**
+ * Admin-reset a user's password (admin only). Generates a new password and returns it.
+ */
+export const adminResetPasswordMutation = (
+    options?: Partial<Options<AdminResetPasswordData>>
+): UseMutationOptions<
+    AdminResetPasswordResponse,
+    AdminResetPasswordError,
+    Options<AdminResetPasswordData>
+> => {
+    const mutationOptions: UseMutationOptions<
+        AdminResetPasswordResponse,
+        AdminResetPasswordError,
+        Options<AdminResetPasswordData>
+    > = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await adminResetPassword({
                 ...options,
                 ...fnOptions,
                 throwOnError: true,
