@@ -6,6 +6,7 @@ export type ClientOptions = {
 
 export type SuccessResponse = {
     message: string
+    status: number
 }
 
 export type ErrorResponse = {
@@ -13,12 +14,27 @@ export type ErrorResponse = {
     status: number
 }
 
-export type AddApiDataRequestSchema = {
+export type MetadataEntrySchema = {
+    key: string
+    value: string
+}
+
+export type UpdateVendorDataRequestSchema = {
+    forApi: string
+    baseUrl?: string
+    apiKey?: string
+    apiUsername?: string
+    apiPassword?: string
+    metadata?: Array<MetadataEntrySchema>
+}
+
+export type AddVendorDataRequestSchema = {
     forApi: string
     baseUrl: string
     apiKey?: string
     apiUsername?: string
     apiPassword?: string
+    metadata?: Array<MetadataEntrySchema>
 }
 
 export type ResetPasswordUserResponseSchema = {
@@ -31,6 +47,22 @@ export type ResetPasswordUserRequestSchema = {
     newPassword: string
 }
 
+export type RequestUserPasswordChangeRequestSchema = {
+    userId: string
+}
+
+export type EditUserRequestSchema = {
+    userId: string
+    firstname?: string
+    lastname?: string
+    username?: string
+    email?: string
+}
+
+export type DeactivateUserRequestSchema = {
+    userId: string
+}
+
 export type CreateUserResponseSchema = {
     id: string
     password: string
@@ -41,6 +73,11 @@ export type CreateUserRequestSchema = {
     lastname: string
     username: string
     email: string
+}
+
+export type ChangeUserRoleRequestSchema = {
+    userId: string
+    role: "ADMIN" | "USER"
 }
 
 export type LoginUserResponseSchema = {
@@ -87,6 +124,10 @@ export type GetUsersPagedRequestSchema = {
 
 export type UserFilterSchema = {
     search?: string
+}
+
+export type ActivateUserRequestSchema = {
+    userId: string
 }
 
 export type DeletePersonResponseSchema = {
@@ -162,11 +203,6 @@ export type LockSchema = {
     apiIdentity?: ExternalApiIdentitySchema
 }
 
-export type MetadataEntrySchema = {
-    key: string
-    value: string
-}
-
 export type PageSchemaLockSchema = {
     content: Array<LockSchema>
     page: number
@@ -187,7 +223,7 @@ export type GetAuditLogResponseDto = {
     id: string
     message: string
     performedByUserId: string
-    createdAt: string
+    createdAt: number
 }
 
 export type GetAuditLogsPagedResponseDto = {
@@ -217,6 +253,60 @@ export type GetAllAuditLogsPagedRequestDto = {
     filter?: AuditLogFilterDto
 }
 
+export type GrantAccessResponseSchema = {
+    grantId: string
+    vendor: string
+    vendorExternalId: string
+}
+
+export type GrantAccessRequestSchema = {
+    personId: string
+    lockId: string
+    start: string
+    end: string
+}
+
+export type RevokeAccessResponseSchema = {
+    grantId: string
+    vendor: string
+}
+
+export type RevokeAccessRequestSchema = {
+    grantId: string
+}
+
+export type AccessGrantSchema = {
+    grantId: string
+    personId: string
+    lockId: string
+    start: string
+    end: string
+    vendor?: string
+    vendorExternalId?: string
+}
+
+export type GetAccessGrantsPagedResponseSchema = {
+    page: PageSchemaAccessGrantSchema
+}
+
+export type PageSchemaAccessGrantSchema = {
+    content: Array<AccessGrantSchema>
+    page: number
+    size: number
+    totalElements: number
+    totalPages: number
+    isFirst: boolean
+    isLast: boolean
+    isEmpty: boolean
+}
+
+export type GetAccessGrantsPagedRequestSchema = {
+    page: number
+    size: number
+    personId?: string
+    lockId?: string
+}
+
 export type GetVendorDataResponseDto = {
     id: string
     forApi: string
@@ -232,16 +322,34 @@ export type GetImplementedVendorsResponseDto = {
     apis: Array<string>
 }
 
+export type GetVendorSpecificDefinitionsResponseDto = {
+    vendorName: string
+    vendorSpecificFields: Array<VendorSpecificFieldDto>
+}
+
+export type VendorSpecificFieldDto = {
+    name: string
+    type: string
+}
+
 export type GetUserResponseSchema = {
     user: UserSchema
+}
+
+export type GetPersonResponseSchema = {
+    person: PersonSchema
 }
 
 export type CountPersonsResponseSchema = {
     count: number
 }
 
+export type CountLocksResponseSchema = {
+    count: number
+}
+
 export type AddVendorDataData = {
-    body: AddApiDataRequestSchema
+    body: AddVendorDataRequestSchema
     path?: never
     query?: never
     url: "/api/v1/vendor-data"
@@ -273,6 +381,45 @@ export type AddVendorDataResponses = {
 
 export type AddVendorDataResponse =
     AddVendorDataResponses[keyof AddVendorDataResponses]
+
+export type UpdateVendorDataData = {
+    body: UpdateVendorDataRequestSchema
+    path?: never
+    query?: never
+    url: "/api/v1/vendor-data"
+}
+
+export type UpdateVendorDataErrors = {
+    /**
+     * Bad Request
+     */
+    400: ErrorResponse
+    /**
+     * Not Found
+     */
+    404: ErrorResponse
+    /**
+     * Unprocessable Entity
+     */
+    422: ErrorResponse
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse
+}
+
+export type UpdateVendorDataError =
+    UpdateVendorDataErrors[keyof UpdateVendorDataErrors]
+
+export type UpdateVendorDataResponses = {
+    /**
+     * Success
+     */
+    200: SuccessResponse
+}
+
+export type UpdateVendorDataResponse =
+    UpdateVendorDataResponses[keyof UpdateVendorDataResponses]
 
 export type ResetPasswordData = {
     body: ResetPasswordUserRequestSchema
@@ -311,6 +458,113 @@ export type ResetPasswordResponses = {
 
 export type ResetPasswordResponse =
     ResetPasswordResponses[keyof ResetPasswordResponses]
+
+export type RequestPasswordChangeData = {
+    body: RequestUserPasswordChangeRequestSchema
+    path?: never
+    query?: never
+    url: "/api/v1/user/request-password-change"
+}
+
+export type RequestPasswordChangeErrors = {
+    /**
+     * Invalid requestor or target user ID.
+     */
+    400: ErrorResponse
+    /**
+     * Requestor is not an admin.
+     */
+    401: ErrorResponse
+    /**
+     * Requestor or target user not found.
+     */
+    404: ErrorResponse
+    /**
+     * Something went wrong...rip
+     */
+    500: ErrorResponse
+}
+
+export type RequestPasswordChangeError =
+    RequestPasswordChangeErrors[keyof RequestPasswordChangeErrors]
+
+export type RequestPasswordChangeResponses = {
+    /**
+     * Password change successfully requested.
+     */
+    200: unknown
+}
+
+export type EditUserData = {
+    body: EditUserRequestSchema
+    path?: never
+    query?: never
+    url: "/api/v1/user/edit-user"
+}
+
+export type EditUserErrors = {
+    /**
+     * Invalid ID, firstname, lastname, username or email.
+     */
+    400: ErrorResponse
+    /**
+     * Requestor is not an admin.
+     */
+    401: ErrorResponse
+    /**
+     * Requestor or target user not found, or email/username already exists.
+     */
+    404: ErrorResponse
+    /**
+     * Something went wrong...rip
+     */
+    500: ErrorResponse
+}
+
+export type EditUserError = EditUserErrors[keyof EditUserErrors]
+
+export type EditUserResponses = {
+    /**
+     * User successfully edited.
+     */
+    200: unknown
+}
+
+export type DeactivateUserData = {
+    body: DeactivateUserRequestSchema
+    path?: never
+    query?: never
+    url: "/api/v1/user/deactivate-user"
+}
+
+export type DeactivateUserErrors = {
+    /**
+     * Invalid ID, or user is already inactive.
+     */
+    400: ErrorResponse
+    /**
+     * Requestor is not an admin.
+     */
+    401: ErrorResponse
+    /**
+     * Requestor or target user not found.
+     */
+    404: ErrorResponse
+    /**
+     * Something went wrong...rip
+     */
+    500: ErrorResponse
+}
+
+export type DeactivateUserError =
+    DeactivateUserErrors[keyof DeactivateUserErrors]
+
+export type DeactivateUserResponses = {
+    /**
+     * User successfully deactivated.
+     */
+    200: unknown
+}
 
 export type CreateUserData = {
     body: CreateUserRequestSchema
@@ -352,6 +606,41 @@ export type CreateUserResponses = {
 }
 
 export type CreateUserResponse = CreateUserResponses[keyof CreateUserResponses]
+
+export type ChangeRoleData = {
+    body: ChangeUserRoleRequestSchema
+    path?: never
+    query?: never
+    url: "/api/v1/user/change-role"
+}
+
+export type ChangeRoleErrors = {
+    /**
+     * Invalid requestor or target user ID.
+     */
+    400: ErrorResponse
+    /**
+     * Requestor is not an admin.
+     */
+    401: ErrorResponse
+    /**
+     * Requestor or target user not found.
+     */
+    404: ErrorResponse
+    /**
+     * Something went wrong...rip
+     */
+    500: ErrorResponse
+}
+
+export type ChangeRoleError = ChangeRoleErrors[keyof ChangeRoleErrors]
+
+export type ChangeRoleResponses = {
+    /**
+     * User role successfully changed.
+     */
+    200: unknown
+}
 
 export type LoginData = {
     body: LoginUserRequestSchema
@@ -411,6 +700,41 @@ export type GetUsersPagedResponses = {
 
 export type GetUsersPagedResponse =
     GetUsersPagedResponses[keyof GetUsersPagedResponses]
+
+export type ActivateUserData = {
+    body: ActivateUserRequestSchema
+    path?: never
+    query?: never
+    url: "/api/v1/user/activate-user"
+}
+
+export type ActivateUserErrors = {
+    /**
+     * Invalid ID, or user is already active.
+     */
+    400: ErrorResponse
+    /**
+     * Requestor is not an admin.
+     */
+    401: ErrorResponse
+    /**
+     * Requestor or target user not found.
+     */
+    404: ErrorResponse
+    /**
+     * Something went wrong...rip
+     */
+    500: ErrorResponse
+}
+
+export type ActivateUserError = ActivateUserErrors[keyof ActivateUserErrors]
+
+export type ActivateUserResponses = {
+    /**
+     * User successfully activated.
+     */
+    200: unknown
+}
 
 export type DeletePersonData = {
     body: DeletePersonRequestSchema
@@ -597,6 +921,146 @@ export type GetAllAuditLogsPagedResponses = {
 export type GetAllAuditLogsPagedResponse =
     GetAllAuditLogsPagedResponses[keyof GetAllAuditLogsPagedResponses]
 
+export type GrantAccessData = {
+    body: GrantAccessRequestSchema
+    path?: never
+    query?: never
+    url: "/api/v1/access-grant"
+}
+
+export type GrantAccessErrors = {
+    /**
+     * Invalid request.
+     */
+    400: ErrorResponse
+    /**
+     * Person or lock not found.
+     */
+    404: ErrorResponse
+    /**
+     * Person not provisioned on the lock's vendor.
+     */
+    422: ErrorResponse
+    /**
+     * Something went wrong.
+     */
+    500: ErrorResponse
+}
+
+export type GrantAccessError = GrantAccessErrors[keyof GrantAccessErrors]
+
+export type GrantAccessResponses = {
+    /**
+     * Access granted.
+     */
+    201: GrantAccessResponseSchema
+}
+
+export type GrantAccessResponse =
+    GrantAccessResponses[keyof GrantAccessResponses]
+
+export type RevokeAccessData = {
+    body: RevokeAccessRequestSchema
+    path?: never
+    query?: never
+    url: "/api/v1/access-grant/revoke"
+}
+
+export type RevokeAccessErrors = {
+    /**
+     * Invalid request.
+     */
+    400: ErrorResponse
+    /**
+     * Access grant not found.
+     */
+    404: ErrorResponse
+    /**
+     * Access grant is not present on any vendor.
+     */
+    422: ErrorResponse
+    /**
+     * Something went wrong.
+     */
+    500: ErrorResponse
+}
+
+export type RevokeAccessError = RevokeAccessErrors[keyof RevokeAccessErrors]
+
+export type RevokeAccessResponses = {
+    /**
+     * Access revoked.
+     */
+    200: RevokeAccessResponseSchema
+}
+
+export type RevokeAccessResponse =
+    RevokeAccessResponses[keyof RevokeAccessResponses]
+
+export type GetAccessGrantsPagedData = {
+    body: GetAccessGrantsPagedRequestSchema
+    path?: never
+    query?: never
+    url: "/api/v1/access-grant/all"
+}
+
+export type GetAccessGrantsPagedErrors = {
+    /**
+     * Invalid page, size, personId or lockId.
+     */
+    400: ErrorResponse
+    /**
+     * Something went wrong.
+     */
+    500: ErrorResponse
+}
+
+export type GetAccessGrantsPagedError =
+    GetAccessGrantsPagedErrors[keyof GetAccessGrantsPagedErrors]
+
+export type GetAccessGrantsPagedResponses = {
+    /**
+     * Success.
+     */
+    200: GetAccessGrantsPagedResponseSchema
+}
+
+export type GetAccessGrantsPagedResponse =
+    GetAccessGrantsPagedResponses[keyof GetAccessGrantsPagedResponses]
+
+export type DeleteVendorDataData = {
+    body?: never
+    path: {
+        id: string
+    }
+    query?: never
+    url: "/api/v1/vendor-data/{id}"
+}
+
+export type DeleteVendorDataErrors = {
+    /**
+     * Not Found
+     */
+    404: ErrorResponse
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse
+}
+
+export type DeleteVendorDataError =
+    DeleteVendorDataErrors[keyof DeleteVendorDataErrors]
+
+export type DeleteVendorDataResponses = {
+    /**
+     * Success
+     */
+    200: SuccessResponse
+}
+
+export type DeleteVendorDataResponse =
+    DeleteVendorDataResponses[keyof DeleteVendorDataResponses]
+
 export type GetVendorDataData = {
     body?: never
     path: {
@@ -649,6 +1113,43 @@ export type ImplementedVendorsResponses = {
 
 export type ImplementedVendorsResponse =
     ImplementedVendorsResponses[keyof ImplementedVendorsResponses]
+
+export type GetVendorSpecificDefinitionsData = {
+    body?: never
+    path: {
+        forVendor: string
+    }
+    query?: never
+    url: "/api/v1/vendor-data/definitions/{forVendor}"
+}
+
+export type GetVendorSpecificDefinitionsErrors = {
+    /**
+     * Bad Request
+     */
+    400: ErrorResponse
+    /**
+     * Unprocessable Entity
+     */
+    422: ErrorResponse
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse
+}
+
+export type GetVendorSpecificDefinitionsError =
+    GetVendorSpecificDefinitionsErrors[keyof GetVendorSpecificDefinitionsErrors]
+
+export type GetVendorSpecificDefinitionsResponses = {
+    /**
+     * Success
+     */
+    200: GetVendorSpecificDefinitionsResponseDto
+}
+
+export type GetVendorSpecificDefinitionsResponse =
+    GetVendorSpecificDefinitionsResponses[keyof GetVendorSpecificDefinitionsResponses]
 
 export type GetAllVendorDataData = {
     body?: never
@@ -712,6 +1213,42 @@ export type GetUserResponses = {
 
 export type GetUserResponse = GetUserResponses[keyof GetUserResponses]
 
+export type GetPersonByIdData = {
+    body?: never
+    path: {
+        id: string
+    }
+    query?: never
+    url: "/api/v1/person/{id}"
+}
+
+export type GetPersonByIdErrors = {
+    /**
+     * Not a valid person id.
+     */
+    400: ErrorResponse
+    /**
+     * Person not found.
+     */
+    404: ErrorResponse
+    /**
+     * Something went wrong...rip
+     */
+    500: ErrorResponse
+}
+
+export type GetPersonByIdError = GetPersonByIdErrors[keyof GetPersonByIdErrors]
+
+export type GetPersonByIdResponses = {
+    /**
+     * Success
+     */
+    200: GetPersonResponseSchema
+}
+
+export type GetPersonByIdResponse =
+    GetPersonByIdResponses[keyof GetPersonByIdResponses]
+
 export type GetPersonsCountData = {
     body?: never
     path?: never
@@ -738,3 +1275,29 @@ export type GetPersonsCountResponses = {
 
 export type GetPersonsCountResponse =
     GetPersonsCountResponses[keyof GetPersonsCountResponses]
+
+export type GetLocksCountData = {
+    body?: never
+    path?: never
+    query?: never
+    url: "/api/v1/lock/count"
+}
+
+export type GetLocksCountErrors = {
+    /**
+     * Something went wrong...rip
+     */
+    500: ErrorResponse
+}
+
+export type GetLocksCountError = GetLocksCountErrors[keyof GetLocksCountErrors]
+
+export type GetLocksCountResponses = {
+    /**
+     * Success
+     */
+    200: CountLocksResponseSchema
+}
+
+export type GetLocksCountResponse =
+    GetLocksCountResponses[keyof GetLocksCountResponses]
