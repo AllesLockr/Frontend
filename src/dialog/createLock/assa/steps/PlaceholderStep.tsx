@@ -1,8 +1,8 @@
-interface CreateAssaAmockLockProps {
+interface PlaceholderStepProps {
     vendor: string
 }
 
-export function CreateAssaAmockLock({ vendor }: CreateAssaAmockLockProps) {
+export function PlaceholderStep({ vendor }: PlaceholderStepProps) {
     return (
         <div className="flex min-h-[120px] flex-col items-center justify-center gap-2 text-center">
             <span className="font-medium">ASSA ABLOY lock</span>

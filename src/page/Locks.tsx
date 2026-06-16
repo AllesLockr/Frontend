@@ -25,7 +25,7 @@ import { ChevronLeft, ChevronRight, RefreshCw } from "lucide-react"
 import type { LockSchema } from "@/client/types.gen.ts"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { CreateLockDialog } from "@/dialog/CreateLockDialog.tsx"
+import { CreateLockDialog } from "@/dialog/createLock/CreateLockDialog.tsx"
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50, 100]
 const MAX_VISIBLE_METADATA = 2
