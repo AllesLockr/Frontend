@@ -4,12 +4,12 @@ WORKDIR /app
 RUN corepack enable && corepack prepare pnpm@10.33.0 --activate
 
 COPY pnpm-lock.yaml package.json pnpm-workspace.yaml ./
-RUN pnpm fetch --frozen-lockfile
+RUN pnpm install --frozen-lockfile
 
 COPY . .
 ARG VITE_API_URL=/api/v1
 ENV VITE_API_URL=$VITE_API_URL
-RUN pnpm install --offline --frozen-lockfile && pnpm build
+RUN pnpm build
 
 FROM nginx:alpine AS runtime
 COPY nginx.conf /etc/nginx/conf.d/default.conf
