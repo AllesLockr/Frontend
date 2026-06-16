@@ -28,6 +28,31 @@ export type UpdateVendorDataRequestSchema = {
     metadata?: Array<MetadataEntrySchema>
 }
 
+export type ExternalApiIdentityDto = {
+    api: string
+    externalId: string
+}
+
+export type LockDto = {
+    id: string
+    name: string
+    serialNumber: string
+    metadata: Array<MetadataEntryDto>
+    apiIdentity?: ExternalApiIdentityDto
+}
+
+export type MetadataEntryDto = {
+    key: string
+    value: string
+}
+
+export type UpdateLockRequestSchema = {
+    name?: string
+    serialNumber?: string
+    metadata?: Array<MetadataEntryDto>
+    apiIdentity?: ExternalApiIdentityDto
+}
+
 export type AddVendorDataRequestSchema = {
     forApi: string
     baseUrl: string
@@ -100,9 +125,9 @@ export type PageSchemaUserSchema = {
     size: number
     totalElements: number
     totalPages: number
+    isEmpty: boolean
     isFirst: boolean
     isLast: boolean
-    isEmpty: boolean
 }
 
 export type UserSchema = {
@@ -124,6 +149,15 @@ export type GetUsersPagedRequestSchema = {
 
 export type UserFilterSchema = {
     search?: string
+}
+
+export type AdminResetPasswordUserResponseSchema = {
+    userId: string
+    password: string
+}
+
+export type AdminResetPasswordUserRequestSchema = {
+    userId: string
 }
 
 export type ActivateUserRequestSchema = {
@@ -163,9 +197,9 @@ export type PageSchemaPersonSchema = {
     size: number
     totalElements: number
     totalPages: number
+    isEmpty: boolean
     isFirst: boolean
     isLast: boolean
-    isEmpty: boolean
 }
 
 export type PersonSchema = {
@@ -209,9 +243,9 @@ export type PageSchemaLockSchema = {
     size: number
     totalElements: number
     totalPages: number
+    isEmpty: boolean
     isFirst: boolean
     isLast: boolean
-    isEmpty: boolean
 }
 
 export type GetLocksPagedRequestSchema = {
@@ -236,9 +270,9 @@ export type PageGetAuditLogResponseDto = {
     size: number
     totalElements: number
     totalPages: number
+    isEmpty: boolean
     isFirst: boolean
     isLast: boolean
-    isEmpty: boolean
 }
 
 export type AuditLogFilterDto = {
@@ -295,9 +329,9 @@ export type PageSchemaAccessGrantSchema = {
     size: number
     totalElements: number
     totalPages: number
+    isEmpty: boolean
     isFirst: boolean
     isLast: boolean
-    isEmpty: boolean
 }
 
 export type GetAccessGrantsPagedRequestSchema = {
@@ -317,11 +351,6 @@ export type GetVendorDataResponseDto = {
     vendorConnectionState: string
     lastChecked: number
     metadata?: Array<MetadataEntryDto>
-}
-
-export type MetadataEntryDto = {
-    key: string
-    value: string
 }
 
 export type GetImplementedVendorsResponseDto = {
@@ -427,6 +456,37 @@ export type UpdateVendorDataResponses = {
 
 export type UpdateVendorDataResponse =
     UpdateVendorDataResponses[keyof UpdateVendorDataResponses]
+
+export type UpdateLockData = {
+    body: UpdateLockRequestSchema
+    path: {
+        id: string
+    }
+    query?: never
+    url: "/api/v1/lock/{id}"
+}
+
+export type UpdateLockErrors = {
+    /**
+     * Sent an not implemented vendor.
+     */
+    422: ErrorResponse
+    /**
+     * Something went wrong...rip
+     */
+    500: ErrorResponse
+}
+
+export type UpdateLockError = UpdateLockErrors[keyof UpdateLockErrors]
+
+export type UpdateLockResponses = {
+    /**
+     * Success
+     */
+    200: LockDto
+}
+
+export type UpdateLockResponse = UpdateLockResponses[keyof UpdateLockResponses]
 
 export type ResetPasswordData = {
     body: ResetPasswordUserRequestSchema
@@ -708,6 +768,45 @@ export type GetUsersPagedResponses = {
 export type GetUsersPagedResponse =
     GetUsersPagedResponses[keyof GetUsersPagedResponses]
 
+export type AdminResetPasswordData = {
+    body: AdminResetPasswordUserRequestSchema
+    path?: never
+    query?: never
+    url: "/api/v1/user/admin-reset-password"
+}
+
+export type AdminResetPasswordErrors = {
+    /**
+     * Invalid requestor or target user ID.
+     */
+    400: ErrorResponse
+    /**
+     * Requestor is not an admin.
+     */
+    401: ErrorResponse
+    /**
+     * Requestor or target user not found.
+     */
+    404: ErrorResponse
+    /**
+     * Something went wrong...rip
+     */
+    500: ErrorResponse
+}
+
+export type AdminResetPasswordError =
+    AdminResetPasswordErrors[keyof AdminResetPasswordErrors]
+
+export type AdminResetPasswordResponses = {
+    /**
+     * Password successfully reset.
+     */
+    201: AdminResetPasswordUserResponseSchema
+}
+
+export type AdminResetPasswordResponse =
+    AdminResetPasswordResponses[keyof AdminResetPasswordResponses]
+
 export type ActivateUserData = {
     body: ActivateUserRequestSchema
     path?: never
@@ -866,6 +965,37 @@ export type SyncLocksResponses = {
 }
 
 export type SyncLocksResponse = SyncLocksResponses[keyof SyncLocksResponses]
+
+export type CreateLockData = {
+    body?: never
+    path: {
+        forVendor: string
+    }
+    query?: never
+    url: "/api/v1/lock/create/{forVendor}"
+}
+
+export type CreateLockErrors = {
+    /**
+     * Sent an not implemented vendor.
+     */
+    422: ErrorResponse
+    /**
+     * Something went wrong...rip
+     */
+    500: ErrorResponse
+}
+
+export type CreateLockError = CreateLockErrors[keyof CreateLockErrors]
+
+export type CreateLockResponses = {
+    /**
+     * Success
+     */
+    200: LockDto
+}
+
+export type CreateLockResponse = CreateLockResponses[keyof CreateLockResponses]
 
 export type GetLocksPagedData = {
     body: GetLocksPagedRequestSchema
