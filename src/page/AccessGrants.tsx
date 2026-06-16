@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { useMutation } from "@tanstack/react-query"
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react"
 import { format } from "date-fns"
@@ -85,42 +85,25 @@ export function AccessGrants() {
     useEffect(() => {
         personsQuery.mutate({ body: { filter: {}, page: 0, size: LOOKUP_SIZE } })
         locksQuery.mutate({ body: { page: 0, size: LOOKUP_SIZE } })
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [personsQuery.mutate, locksQuery.mutate])
 
-    const prevPersonRef = useRef(personFilter)
-    const prevLockRef = useRef(lockFilter)
-    const prevSizeRef = useRef(size)
-
-    const fetchGrants = (currentPage = page) => {
-        grants.mutate({
-            body: {
-                page: currentPage,
-                size,
-                personId: personFilter === ALL ? undefined : personFilter,
-                lockId: lockFilter === ALL ? undefined : lockFilter,
-            },
-        })
-    }
+    const fetchGrants = useCallback(
+        (currentPage: number) => {
+            grants.mutate({
+                body: {
+                    page: currentPage,
+                    size,
+                    personId: personFilter === ALL ? undefined : personFilter,
+                    lockId: lockFilter === ALL ? undefined : lockFilter,
+                },
+            })
+        },
+        [grants.mutate, size, personFilter, lockFilter],
+    )
 
     useEffect(() => {
-        let currentPage = page
-
-        if (
-            personFilter !== prevPersonRef.current ||
-            lockFilter !== prevLockRef.current ||
-            size !== prevSizeRef.current
-        ) {
-            currentPage = 0
-            setPage(0)
-            prevPersonRef.current = personFilter
-            prevLockRef.current = lockFilter
-            prevSizeRef.current = size
-        }
-
-        fetchGrants(currentPage)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [page, size, personFilter, lockFilter])
+        fetchGrants(page)
+    }, [page, fetchGrants])
 
     const pageInfo = grants.data?.page
     const rows = pageInfo?.content ?? []
@@ -133,7 +116,7 @@ export function AccessGrants() {
             })
             toast.success("Access revoked.")
             setGrantToRevoke(null)
-            fetchGrants()
+            fetchGrants(page)
         } catch (error: unknown) {
             const err = error as { message?: string }
             toast.error(err?.message ?? "Failed to revoke access.")
@@ -158,7 +141,13 @@ export function AccessGrants() {
             </section>
 
             <div className="flex items-center gap-2">
-                <Select value={personFilter} onValueChange={setPersonFilter}>
+                <Select
+                    value={personFilter}
+                    onValueChange={(val) => {
+                        setPersonFilter(val)
+                        setPage(0)
+                    }}
+                >
                     <SelectTrigger className="w-56">
                         <SelectValue placeholder="All persons" />
                     </SelectTrigger>
@@ -171,7 +160,13 @@ export function AccessGrants() {
                         ))}
                     </SelectContent>
                 </Select>
-                <Select value={lockFilter} onValueChange={setLockFilter}>
+                <Select
+                    value={lockFilter}
+                    onValueChange={(val) => {
+                        setLockFilter(val)
+                        setPage(0)
+                    }}
+                >
                     <SelectTrigger className="w-56">
                         <SelectValue placeholder="All locks" />
                     </SelectTrigger>
@@ -299,7 +294,10 @@ export function AccessGrants() {
                     <span>Rows per page</span>
                     <Select
                         value={String(size)}
-                        onValueChange={(val) => setSize(Number(val))}
+                        onValueChange={(val) => {
+                            setSize(Number(val))
+                            setPage(0)
+                        }}
                     >
                         <SelectTrigger className="w-20">
                             <SelectValue />
@@ -361,7 +359,7 @@ export function AccessGrants() {
                 locks={locks}
                 onSuccess={() => {
                     toast.success("Access granted.")
-                    fetchGrants()
+                    fetchGrants(page)
                 }}
             />
 
