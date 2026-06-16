@@ -45,12 +45,15 @@ export function Persons() {
     const prevSearchRef = useRef(debouncedSearch)
     const prevSizeRef = useRef(size)
 
-    const fetchPersons = useCallback((pageToFetch: number) => {
-        const filter: PersonFilterSchema = debouncedSearch
-            ? { search: debouncedSearch }
-            : {}
-        mutate({ body: { filter, page: pageToFetch, size } })
-    }, [debouncedSearch, size, mutate])
+    const fetchPersons = useCallback(
+        (pageToFetch: number) => {
+            const filter: PersonFilterSchema = debouncedSearch
+                ? { search: debouncedSearch }
+                : {}
+            mutate({ body: { filter, page: pageToFetch, size } })
+        },
+        [debouncedSearch, size, mutate]
+    )
 
     useEffect(() => {
         let currentPage = page
@@ -72,7 +75,7 @@ export function Persons() {
     const persons = pageInfo?.content ?? []
 
     return (
-        <div className="space-y-4">
+        <div className="flex h-full flex-col gap-4 overflow-hidden">
             <section className="flex items-center justify-between">
                 <h2 className="text-2xl font-semibold">Persons</h2>
                 <div className="flex items-center gap-2">
@@ -89,53 +92,55 @@ export function Persons() {
                 </div>
             </section>
 
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Firstname</TableHead>
-                        <TableHead>Lastname</TableHead>
-                        <TableHead>Email</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {isPending ? (
+            <div className="flex-1 overflow-y-auto">
+                <Table>
+                    <TableHeader>
                         <TableRow>
-                            <TableCell
-                                colSpan={3}
-                                className="text-center text-muted-foreground"
-                            >
-                                Loading...
-                            </TableCell>
+                            <TableHead>Firstname</TableHead>
+                            <TableHead>Lastname</TableHead>
+                            <TableHead>Email</TableHead>
                         </TableRow>
-                    ) : error ? (
-                        <TableRow>
-                            <TableCell
-                                colSpan={3}
-                                className="text-center text-destructive"
-                            >
-                                Failed to load persons. Please try again.
-                            </TableCell>
-                        </TableRow>
-                    ) : persons.length === 0 ? (
-                        <TableRow>
-                            <TableCell
-                                colSpan={3}
-                                className="text-center text-muted-foreground"
-                            >
-                                No persons found.
-                            </TableCell>
-                        </TableRow>
-                    ) : (
-                        persons.map((person) => (
-                            <TableRow key={person.id}>
-                                <TableCell>{person.firstname}</TableCell>
-                                <TableCell>{person.lastname}</TableCell>
-                                <TableCell>{person.email}</TableCell>
+                    </TableHeader>
+                    <TableBody>
+                        {isPending ? (
+                            <TableRow>
+                                <TableCell
+                                    colSpan={3}
+                                    className="text-center text-muted-foreground"
+                                >
+                                    Loading...
+                                </TableCell>
                             </TableRow>
-                        ))
-                    )}
-                </TableBody>
-            </Table>
+                        ) : error ? (
+                            <TableRow>
+                                <TableCell
+                                    colSpan={3}
+                                    className="text-center text-destructive"
+                                >
+                                    Failed to load persons. Please try again.
+                                </TableCell>
+                            </TableRow>
+                        ) : persons.length === 0 ? (
+                            <TableRow>
+                                <TableCell
+                                    colSpan={3}
+                                    className="text-center text-muted-foreground"
+                                >
+                                    No persons found.
+                                </TableCell>
+                            </TableRow>
+                        ) : (
+                            persons.map((person) => (
+                                <TableRow key={person.id}>
+                                    <TableCell>{person.firstname}</TableCell>
+                                    <TableCell>{person.lastname}</TableCell>
+                                    <TableCell>{person.email}</TableCell>
+                                </TableRow>
+                            ))
+                        )}
+                    </TableBody>
+                </Table>
+            </div>
 
             <div className="flex items-center justify-between text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">

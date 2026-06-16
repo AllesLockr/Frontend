@@ -118,7 +118,7 @@ export function Locks() {
     )
 
     return (
-        <div className="space-y-4">
+        <div className="flex h-full flex-col gap-4 overflow-hidden">
             <section className="flex items-center justify-between">
                 <h2 className="text-2xl font-semibold">Locks</h2>
                 <div className="flex items-center gap-2">
@@ -127,80 +127,82 @@ export function Locks() {
                 </div>
             </section>
 
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Serial number</TableHead>
-                        <TableHead>Vendor</TableHead>
-                        <TableHead>Metadata</TableHead>
-                        <TableHead>External ID</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {isPending ? (
+            <div className="flex-1 overflow-y-auto">
+                <Table>
+                    <TableHeader>
                         <TableRow>
-                            <TableCell
-                                colSpan={5}
-                                className="text-center text-muted-foreground"
-                            >
-                                Loading...
-                            </TableCell>
+                            <TableHead>Name</TableHead>
+                            <TableHead>Serial number</TableHead>
+                            <TableHead>Vendor</TableHead>
+                            <TableHead>Metadata</TableHead>
+                            <TableHead>External ID</TableHead>
                         </TableRow>
-                    ) : error ? (
-                        <TableRow>
-                            <TableCell
-                                colSpan={5}
-                                className="text-center text-destructive"
-                            >
-                                Failed to load locks. Please try again.
-                            </TableCell>
-                        </TableRow>
-                    ) : locks.length === 0 ? (
-                        <TableRow>
-                            <TableCell colSpan={5} className="py-12">
-                                <div className="flex flex-col items-center gap-2 text-center">
-                                    <span className="font-medium">
-                                        No locks yet
-                                    </span>
-                                    <span className="text-muted-foreground">
-                                        Locks appear here after they are synced
-                                        from your vendor systems.
-                                    </span>
-                                    {syncButton}
-                                </div>
-                            </TableCell>
-                        </TableRow>
-                    ) : (
-                        locks.map((lock) => (
-                            <TableRow key={lock.id}>
-                                <TableCell>
-                                    <div className="flex flex-col">
-                                        <span className="font-medium">
-                                            {lock.name}
-                                        </span>
-                                        <span className="max-w-40 truncate font-mono text-xs text-muted-foreground">
-                                            {lock.id}
-                                        </span>
-                                    </div>
-                                </TableCell>
-                                <TableCell className="font-mono">
-                                    {lock.serialNumber}
-                                </TableCell>
-                                <TableCell>
-                                    <VendorBadge lock={lock} />
-                                </TableCell>
-                                <TableCell>
-                                    <MetadataCell lock={lock} />
-                                </TableCell>
-                                <TableCell className="font-mono text-muted-foreground">
-                                    {lock.apiIdentity?.externalId ?? "–"}
+                    </TableHeader>
+                    <TableBody>
+                        {isPending ? (
+                            <TableRow>
+                                <TableCell
+                                    colSpan={5}
+                                    className="text-center text-muted-foreground"
+                                >
+                                    Loading...
                                 </TableCell>
                             </TableRow>
-                        ))
-                    )}
-                </TableBody>
-            </Table>
+                        ) : error ? (
+                            <TableRow>
+                                <TableCell
+                                    colSpan={5}
+                                    className="text-center text-destructive"
+                                >
+                                    Failed to load locks. Please try again.
+                                </TableCell>
+                            </TableRow>
+                        ) : locks.length === 0 ? (
+                            <TableRow>
+                                <TableCell colSpan={5} className="py-12">
+                                    <div className="flex flex-col items-center gap-2 text-center">
+                                        <span className="font-medium">
+                                            No locks yet
+                                        </span>
+                                        <span className="text-muted-foreground">
+                                            Locks appear here after they are
+                                            synced from your vendor systems.
+                                        </span>
+                                        {syncButton}
+                                    </div>
+                                </TableCell>
+                            </TableRow>
+                        ) : (
+                            locks.map((lock) => (
+                                <TableRow key={lock.id}>
+                                    <TableCell>
+                                        <div className="flex flex-col">
+                                            <span className="font-medium">
+                                                {lock.name}
+                                            </span>
+                                            <span className="max-w-40 truncate font-mono text-xs text-muted-foreground">
+                                                {lock.id}
+                                            </span>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell className="font-mono">
+                                        {lock.serialNumber}
+                                    </TableCell>
+                                    <TableCell>
+                                        <VendorBadge lock={lock} />
+                                    </TableCell>
+                                    <TableCell>
+                                        <MetadataCell lock={lock} />
+                                    </TableCell>
+                                    <TableCell className="font-mono text-muted-foreground">
+                                        {lock.apiIdentity?.externalId ?? "–"}
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        )}
+                    </TableBody>
+                </Table>
+            </div>
 
             <div className="flex items-center justify-between text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">

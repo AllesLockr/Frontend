@@ -52,9 +52,8 @@ export function AccessGrants() {
     const [lockFilter, setLockFilter] = useState<string>(ALL)
 
     const [grantOpen, setGrantOpen] = useState(false)
-    const [grantToRevoke, setGrantToRevoke] = useState<AccessGrantSchema | null>(
-        null,
-    )
+    const [grantToRevoke, setGrantToRevoke] =
+        useState<AccessGrantSchema | null>(null)
 
     const grants = useMutation(getAccessGrantsPagedMutation())
     const personsQuery = useMutation(getPersonsPagedMutation())
@@ -67,11 +66,11 @@ export function AccessGrants() {
 
     const persons = useMemo(
         () => personsQuery.data?.page.content ?? [],
-        [personsQuery.data],
+        [personsQuery.data]
     )
     const locks = useMemo(
         () => locksQuery.data?.page.content ?? [],
-        [locksQuery.data],
+        [locksQuery.data]
     )
 
     const personNames = useMemo(() => {
@@ -102,7 +101,7 @@ export function AccessGrants() {
                 },
             })
         },
-        [grantsMutate, size, personFilter, lockFilter],
+        [grantsMutate, size, personFilter, lockFilter]
     )
 
     useEffect(() => {
@@ -138,7 +137,7 @@ export function AccessGrants() {
     )
 
     return (
-        <div className="space-y-4">
+        <div className="flex h-full flex-col gap-4 overflow-hidden">
             <section className="flex items-center justify-between">
                 <h2 className="text-2xl font-semibold">Access Grants</h2>
                 {grantButton}
@@ -185,113 +184,122 @@ export function AccessGrants() {
                 </Select>
             </div>
 
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Person</TableHead>
-                        <TableHead>Lock</TableHead>
-                        <TableHead>Start</TableHead>
-                        <TableHead>End</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Vendor</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {grants.isPending ? (
+            <div className="flex-1 overflow-y-auto">
+                <Table>
+                    <TableHeader>
                         <TableRow>
-                            <TableCell
-                                colSpan={7}
-                                className="text-center text-muted-foreground"
-                            >
-                                Loading...
-                            </TableCell>
+                            <TableHead>Person</TableHead>
+                            <TableHead>Lock</TableHead>
+                            <TableHead>Start</TableHead>
+                            <TableHead>End</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead>Vendor</TableHead>
+                            <TableHead className="text-right">
+                                Actions
+                            </TableHead>
                         </TableRow>
-                    ) : grants.error ? (
-                        <TableRow>
-                            <TableCell
-                                colSpan={7}
-                                className="text-center text-destructive"
-                            >
-                                Failed to load access grants. Please try again.
-                            </TableCell>
-                        </TableRow>
-                    ) : rows.length === 0 ? (
-                        <TableRow>
-                            <TableCell colSpan={7} className="py-12">
-                                <div className="flex flex-col items-center gap-2 text-center">
-                                    <p className="font-medium">
-                                        No access grants yet.
-                                    </p>
-                                    <p className="text-sm text-muted-foreground">
-                                        Grant a person access to a lock to see it
-                                        listed here.
-                                    </p>
-                                    <div className="mt-2">{grantButton}</div>
-                                </div>
-                            </TableCell>
-                        </TableRow>
-                    ) : (
-                        rows.map((grant) => (
-                            <TableRow key={grant.grantId}>
-                                <TableCell>
-                                    <div className="font-medium">
-                                        {personNames.get(grant.personId) ??
-                                            "Unknown"}
-                                    </div>
-                                    <div className="text-xs text-muted-foreground">
-                                        {truncateId(grant.personId)}
-                                    </div>
-                                </TableCell>
-                                <TableCell>
-                                    <div className="font-medium">
-                                        {lockNames.get(grant.lockId) ??
-                                            "Unknown"}
-                                    </div>
-                                    <div className="text-xs text-muted-foreground">
-                                        {truncateId(grant.lockId)}
-                                    </div>
-                                </TableCell>
-                                <TableCell>
-                                    {formatDateTime(grant.start)}
-                                </TableCell>
-                                <TableCell>
-                                    {formatDateTime(grant.end)}
-                                </TableCell>
-                                <TableCell>
-                                    <AccessStatusBadge
-                                        start={grant.start}
-                                        end={grant.end}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    {grant.vendor ? (
-                                        <Badge variant="secondary">
-                                            {grant.vendor}
-                                        </Badge>
-                                    ) : (
-                                        <Badge
-                                            variant="outline"
-                                            className="text-muted-foreground"
-                                        >
-                                            Not provisioned
-                                        </Badge>
-                                    )}
-                                </TableCell>
-                                <TableCell className="text-right">
-                                    <Button
-                                        variant="link"
-                                        className="h-auto p-0 text-destructive"
-                                        onClick={() => setGrantToRevoke(grant)}
-                                    >
-                                        Revoke
-                                    </Button>
+                    </TableHeader>
+                    <TableBody>
+                        {grants.isPending ? (
+                            <TableRow>
+                                <TableCell
+                                    colSpan={7}
+                                    className="text-center text-muted-foreground"
+                                >
+                                    Loading...
                                 </TableCell>
                             </TableRow>
-                        ))
-                    )}
-                </TableBody>
-            </Table>
+                        ) : grants.error ? (
+                            <TableRow>
+                                <TableCell
+                                    colSpan={7}
+                                    className="text-center text-destructive"
+                                >
+                                    Failed to load access grants. Please try
+                                    again.
+                                </TableCell>
+                            </TableRow>
+                        ) : rows.length === 0 ? (
+                            <TableRow>
+                                <TableCell colSpan={7} className="py-12">
+                                    <div className="flex flex-col items-center gap-2 text-center">
+                                        <p className="font-medium">
+                                            No access grants yet.
+                                        </p>
+                                        <p className="text-sm text-muted-foreground">
+                                            Grant a person access to a lock to
+                                            see it listed here.
+                                        </p>
+                                        <div className="mt-2">
+                                            {grantButton}
+                                        </div>
+                                    </div>
+                                </TableCell>
+                            </TableRow>
+                        ) : (
+                            rows.map((grant) => (
+                                <TableRow key={grant.grantId}>
+                                    <TableCell>
+                                        <div className="font-medium">
+                                            {personNames.get(grant.personId) ??
+                                                "Unknown"}
+                                        </div>
+                                        <div className="text-xs text-muted-foreground">
+                                            {truncateId(grant.personId)}
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="font-medium">
+                                            {lockNames.get(grant.lockId) ??
+                                                "Unknown"}
+                                        </div>
+                                        <div className="text-xs text-muted-foreground">
+                                            {truncateId(grant.lockId)}
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        {formatDateTime(grant.start)}
+                                    </TableCell>
+                                    <TableCell>
+                                        {formatDateTime(grant.end)}
+                                    </TableCell>
+                                    <TableCell>
+                                        <AccessStatusBadge
+                                            start={grant.start}
+                                            end={grant.end}
+                                        />
+                                    </TableCell>
+                                    <TableCell>
+                                        {grant.vendor ? (
+                                            <Badge variant="secondary">
+                                                {grant.vendor}
+                                            </Badge>
+                                        ) : (
+                                            <Badge
+                                                variant="outline"
+                                                className="text-muted-foreground"
+                                            >
+                                                Not provisioned
+                                            </Badge>
+                                        )}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        <Button
+                                            variant="link"
+                                            className="h-auto p-0 text-destructive"
+                                            onClick={() =>
+                                                setGrantToRevoke(grant)
+                                            }
+                                        >
+                                            Revoke
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        )}
+                    </TableBody>
+                </Table>
+            </div>
 
             <div className="flex items-center justify-between text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
@@ -380,8 +388,8 @@ export function AccessGrants() {
                         <span className="block space-y-3">
                             <span className="block">
                                 This removes the grant from the lock's vendor
-                                system. The person will no longer be able to open
-                                this lock. This action cannot be undone.
+                                system. The person will no longer be able to
+                                open this lock. This action cannot be undone.
                             </span>
                             <span className="block rounded-md border bg-muted/40 p-3 text-sm text-foreground">
                                 <span className="grid grid-cols-[80px_1fr] gap-y-1">
@@ -390,7 +398,7 @@ export function AccessGrants() {
                                     </span>
                                     <span className="font-medium">
                                         {personNames.get(
-                                            grantToRevoke.personId,
+                                            grantToRevoke.personId
                                         ) ?? "Unknown"}
                                     </span>
                                     <span className="text-muted-foreground">
