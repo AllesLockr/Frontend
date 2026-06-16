@@ -16,7 +16,7 @@ export function CredentialsStep({ credentials, isPending }: CredentialsStepProps
         <div className="flex flex-col gap-4">
             <p className="text-sm text-muted-foreground">
                 Please open the ISEO Installer App and login with the following
-                credentials:
+                credentials. When logged in, proceed to the next step.
             </p>
 
             {isPending ? (

@@ -140,6 +140,8 @@ function VendorWizard({
     const useVendorSteps = resolveVendorStepsHook(vendorData.forApi)
     const { steps, isLoading } = useVendorSteps(vendorData)
 
+    const [stepError, setStepError] = useState<string | null>(null)
+
     const labels = [SELECT_VENDOR_LABEL, ...steps.map((s) => s.label)]
     const lastIndex = labels.length - 1
     const isFirst = step === 0
@@ -148,6 +150,20 @@ function VendorWizard({
     // Vendor step content is offset by 1 (index 0 is the select-vendor step).
     const vendorStep = isFirst ? undefined : steps[step - 1]
 
+    const handleNext = async () => {
+        setStepError(null)
+        try {
+            await vendorStep?.onNext?.()
+            onStepChange(step + 1)
+        } catch (error: unknown) {
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : "An unexpected error occurred."
+            setStepError(message)
+        }
+    }
+
     return (
         <>
             <Stepper labels={labels} activeIndex={step} />
@@ -155,6 +171,12 @@ function VendorWizard({
             <div className="py-4">
                 {isFirst ? selectVendorContent : vendorStep?.content}
             </div>
+
+            {stepError && (
+                <div className="mb-4 rounded-md border border-destructive/20 bg-destructive/10 p-3 text-sm font-medium text-destructive">
+                    {stepError}
+                </div>
+            )}
 
             <DialogFooter>
                 {isFirst ? (
@@ -168,7 +190,7 @@ function VendorWizard({
                         </Button>
                         <Button
                             type="button"
-                            onClick={() => onStepChange(step + 1)}
+                            onClick={handleNext}
                             disabled={isLoading}
                         >
                             Next
@@ -179,7 +201,10 @@ function VendorWizard({
                         <Button
                             type="button"
                             variant="outline"
-                            onClick={() => onStepChange(step - 1)}
+                            onClick={() => {
+                                setStepError(null)
+                                onStepChange(step - 1)
+                            }}
                         >
                             Back
                         </Button>
@@ -190,7 +215,7 @@ function VendorWizard({
                         ) : (
                             <Button
                                 type="button"
-                                onClick={() => onStepChange(step + 1)}
+                                onClick={handleNext}
                                 disabled={isLoading}
                             >
                                 Next

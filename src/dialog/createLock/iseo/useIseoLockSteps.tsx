@@ -1,6 +1,10 @@
-import { useQuery } from "@tanstack/react-query"
-import { getVendorSpecificDefinitionsOptions } from "@/client/@tanstack/react-query.gen.ts"
-import type { GetVendorDataResponseDto } from "@/client"
+import { useState } from "react"
+import { useMutation, useQuery } from "@tanstack/react-query"
+import {
+    createLockMutation,
+    getVendorSpecificDefinitionsOptions,
+} from "@/client/@tanstack/react-query.gen.ts"
+import type { GetVendorDataResponseDto, LockDto } from "@/client"
 import type { VendorLockStepsResult } from "@/dialog/createLock/types.ts"
 import {
     CredentialsStep,
@@ -11,11 +15,17 @@ import { PairingStep } from "@/dialog/createLock/iseo/steps/PairingStep.tsx"
 export function useIseoLockSteps(
     vendorData: GetVendorDataResponseDto,
 ): VendorLockStepsResult {
+    const [createdLock, setCreatedLock] = useState<LockDto | undefined>(
+        undefined,
+    )
+
     const { data: definitionsData, isPending } = useQuery(
         getVendorSpecificDefinitionsOptions({
             path: { forVendor: vendorData.forApi },
         }),
     )
+
+    const createMutation = useMutation(createLockMutation())
 
     const fields = definitionsData?.vendorSpecificFields ?? []
 
@@ -39,12 +49,18 @@ export function useIseoLockSteps(
                         isPending={isPending}
                     />
                 ),
+                onNext: async () => {
+                    const lock = await createMutation.mutateAsync({
+                        path: { forVendor: vendorData.forApi },
+                    })
+                    setCreatedLock(lock)
+                },
             },
             {
                 label: "Pairing",
-                content: <PairingStep />,
+                content: <PairingStep lock={createdLock} />,
             },
         ],
-        isLoading: isPending,
+        isLoading: isPending || createMutation.isPending,
     }
 }
