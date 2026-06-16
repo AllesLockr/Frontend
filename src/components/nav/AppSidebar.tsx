@@ -11,11 +11,10 @@ import {
 } from "@/components/ui/sidebar.tsx"
 import {
     BookText,
-    Building,
-    Key,
+    FileJson,
     LayoutDashboard,
-    Lock, type LucideIcon,
-    MapPin,
+    Lock,
+    type LucideIcon,
     Network,
     ShieldCheck,
     User,
@@ -34,12 +33,10 @@ interface SideBarElement {
     icon: LucideIcon
     name: string
     path: string
+    external?: boolean
 }
 
-
-
 export function AppSidebar() {
-
     const sections: SideBarSection[] = [
         {
             id: "main",
@@ -61,16 +58,7 @@ export function AppSidebar() {
                     name: "Persons",
                     path: "/persons",
                 },
-                { id: "roles", icon: Users, name: "Roles", path: "/roles" },
-                { id: "zones", icon: MapPin, name: "Zones", path: "/zones" },
-                {
-                    id: "estates",
-                    icon: Building,
-                    name: "Estates",
-                    path: "/estates",
-                },
                 { id: "locks", icon: Lock, name: "Locks", path: "/locks" },
-                { id: "keys", icon: Key, name: "Keys", path: "/keys" },
                 {
                     id: "access-grants",
                     icon: ShieldCheck,
@@ -82,8 +70,25 @@ export function AppSidebar() {
         {
             id: "system",
             elements: [
-                { id: "vendors", icon: Network, name: "Vendors", path: "/vendors" },
-                { id: "audit-logs", icon: BookText, name: "Audit-Logs", path: "/audit-logs" },
+                {
+                    id: "vendors",
+                    icon: Network,
+                    name: "Vendors",
+                    path: "/vendors",
+                },
+                {
+                    id: "audit-logs",
+                    icon: BookText,
+                    name: "Audit-Logs",
+                    path: "/audit-logs",
+                },
+                {
+                    id: "api-docs",
+                    icon: FileJson,
+                    name: "API-Dokumentation",
+                    path: "/swagger-ui/index.html",
+                    external: true,
+                },
             ],
         },
         {
@@ -91,7 +96,7 @@ export function AppSidebar() {
             elements: [
                 { id: "users", icon: Users, name: "Users", path: "/users" },
             ],
-        }
+        },
     ]
 
     return (
@@ -115,16 +120,29 @@ export function AppSidebar() {
                             {section.elements.map((element) => (
                                 <SidebarMenu key={element.id}>
                                     <SidebarMenuItem key={element.id}>
-                                        <NavLink to={element.path}>
-                                            {({ isActive }) => (
-                                                <SidebarMenuButton
-                                                    isActive={isActive}
-                                                >
+                                        {element.external ? (
+                                            <a
+                                                href={element.path}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                            >
+                                                <SidebarMenuButton>
                                                     <element.icon />
                                                     {element.name}
                                                 </SidebarMenuButton>
-                                            )}
-                                        </NavLink>
+                                            </a>
+                                        ) : (
+                                            <NavLink to={element.path}>
+                                                {({ isActive }) => (
+                                                    <SidebarMenuButton
+                                                        isActive={isActive}
+                                                    >
+                                                        <element.icon />
+                                                        {element.name}
+                                                    </SidebarMenuButton>
+                                                )}
+                                            </NavLink>
+                                        )}
                                     </SidebarMenuItem>
                                 </SidebarMenu>
                             ))}
