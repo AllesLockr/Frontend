@@ -120,8 +120,8 @@ export function AuditLogs() {
                     <div className="relative w-64">
                         <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
-                            placeholder="Suche nach Username oder Nachricht..."
-                            aria-label="Suche nach Username oder Nachricht"
+                            placeholder="Search..."
+                            aria-label="Search..."
                             className="pl-9"
                             value={searchText}
                             onChange={(e) => setSearchText(e.target.value)}
