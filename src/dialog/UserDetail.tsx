@@ -28,9 +28,18 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
 import { useMutation } from "@tanstack/react-query"
 import {
     activateUserMutation,
+    adminResetPasswordMutation,
     changeRoleMutation,
     deactivateUserMutation,
     editUserMutation,
@@ -39,7 +48,7 @@ import {
 import { toast } from "sonner"
 import { useState } from "react"
 import type { ErrorResponse } from "@/client"
-import { KeyRound, Pencil, ShieldCheck, UserCheck, UserX } from "lucide-react"
+import { Check, Copy, KeyRound, Pencil, ShieldAlert, ShieldCheck, UserCheck, UserX } from "lucide-react"
 import { useAuth } from "@/context/AuthContext.tsx"
 
 // Adjust these to match your actual role enum/type
@@ -105,12 +114,19 @@ export function UserDetail({
     const { mutate: changeRole, isPending: isRolePending } =
         useMutation(changeRoleMutation())
 
+    const { mutate: adminResetPassword, isPending: isAdminResetPending } =
+        useMutation(adminResetPasswordMutation())
+
+    const [resetPasswordResult, setResetPasswordResult] = useState<string | null>(null)
+    const [copied, setCopied] = useState(false)
+
     const isBusy =
         isEditPending ||
         isActivatePending ||
         isDeactivatePending ||
         isResetPending ||
-        isRolePending
+        isRolePending ||
+        isAdminResetPending
 
     // --- Handlers ---
     const handleSaveEdit = () => {
@@ -187,6 +203,36 @@ export function UserDetail({
                 },
             }
         )
+    }
+
+    const handleAdminResetPassword = () => {
+        if (!user) return
+        adminResetPassword(
+            { body: { userId: user.id } },
+            {
+                onSuccess: (data) => {
+                    setResetPasswordResult(data.password)
+                    onRefresh()
+                },
+                onError: (err: ErrorResponse) => {
+                    toast.error("Failed to reset password", {
+                        description: err.message ?? "Please try again.",
+                    })
+                },
+            }
+        )
+    }
+
+    const handleCopyPassword = async () => {
+        if (!resetPasswordResult) return
+        try {
+            await navigator.clipboard.writeText(resetPasswordResult)
+            setCopied(true)
+            toast.success("Password copied to clipboard")
+            setTimeout(() => setCopied(false), 2000)
+        } catch {
+            toast.error("Failed to copy password")
+        }
     }
 
     const handleRoleChange = (newRole: string) => {
@@ -467,11 +513,90 @@ export function UserDetail({
                                             </AlertDialogAction>
                                         </AlertDialogFooter>
                                     </AlertDialogContent>
+                                 </AlertDialog>
+
+                                {/* Admin Password Reset */}
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            className="justify-start gap-2"
+                                            disabled={isBusy}
+                                        >
+                                            <ShieldAlert className="h-4 w-4" />
+                                            Admin password reset
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>
+                                                Reset password for {user.firstname ?? user.username}?
+                                            </AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                A new password will be generated and can be copied afterwards.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>
+                                                Cancel
+                                            </AlertDialogCancel>
+                                            <AlertDialogAction
+                                                onClick={handleAdminResetPassword}
+                                            >
+                                                Reset password
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
                                 </AlertDialog>
                             </div>
                         </section>
                     </>
                 )}
+
+                {/* Password Result Dialog */}
+                <Dialog
+                    open={resetPasswordResult !== null}
+                    onOpenChange={(open) => {
+                        if (!open) {
+                            setResetPasswordResult(null)
+                            setCopied(false)
+                        }
+                    }}
+                >
+                    <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                            <DialogTitle>Password reset successful</DialogTitle>
+                            <DialogDescription>
+                                The new password for {user?.firstname ?? user?.username}. Copy it now. It will not be shown again.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <div className="flex gap-2 py-4">
+                            <Input
+                                value={resetPasswordResult ?? ""}
+                                readOnly
+                                className="font-mono"
+                            />
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="icon"
+                                onClick={handleCopyPassword}
+                                aria-label="Copy password"
+                            >
+                                {copied ? (
+                                    <Check className="h-4 w-4" />
+                                ) : (
+                                    <Copy className="h-4 w-4" />
+                                )}
+                            </Button>
+                        </div>
+                        <DialogFooter>
+                            <Button onClick={() => { setResetPasswordResult(null); setCopied(false) }}>
+                                Done
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </SheetContent>
         </Sheet>
     )
