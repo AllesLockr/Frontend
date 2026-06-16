@@ -513,82 +513,45 @@ export function UserDetail({
                                             </AlertDialogAction>
                                         </AlertDialogFooter>
                                     </AlertDialogContent>
+                                 </AlertDialog>
+
+                                {/* Admin Password Reset */}
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            className="justify-start gap-2"
+                                            disabled={isBusy}
+                                        >
+                                            <ShieldAlert className="h-4 w-4" />
+                                            Admin password reset
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>
+                                                Reset password for {user.firstname ?? user.username}?
+                                            </AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                A new password will be generated and can be copied afterwards.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>
+                                                Cancel
+                                            </AlertDialogCancel>
+                                            <AlertDialogAction
+                                                onClick={handleAdminResetPassword}
+                                            >
+                                                Reset password
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
                                 </AlertDialog>
                             </div>
                         </section>
                     </>
                 )}
-                        {/* Request Password Reset */}
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    className="justify-start gap-2"
-                                    disabled={isBusy}
-                                >
-                                    <KeyRound className="h-4 w-4" />
-                                    Request password reset
-                                </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                        Request password reset?
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        {user.firstname ?? user.username} will
-                                        be required to set a new password on
-                                        their next login.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel>
-                                        Cancel
-                                    </AlertDialogCancel>
-                                    <AlertDialogAction
-                                        onClick={handleRequestPasswordReset}
-                                    >
-                                        Request reset
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
-
-                        {/* Admin Password Reset */}
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    className="justify-start gap-2"
-                                    disabled={isBusy}
-                                >
-                                    <ShieldAlert className="h-4 w-4" />
-                                    Admin password reset
-                                </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                        Reset password for {user.firstname ?? user.username}?
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        A new password will be generated and can be copied afterwards.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel>
-                                        Cancel
-                                    </AlertDialogCancel>
-                                    <AlertDialogAction
-                                        onClick={handleAdminResetPassword}
-                                    >
-                                        Reset password
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
-                    </div>
-                </section>
 
                 {/* Password Result Dialog */}
                 <Dialog
