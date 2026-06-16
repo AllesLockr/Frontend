@@ -24,6 +24,11 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+      "/v3/api-docs": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
 })
