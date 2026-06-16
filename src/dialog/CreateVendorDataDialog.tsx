@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -26,11 +26,13 @@ import {
     implementedVendorsOptions,
     addVendorDataMutation,
     updateVendorDataMutation,
+    getVendorSpecificDefinitionsOptions,
 } from "@/client/@tanstack/react-query.gen.ts"
 import type {
     AddVendorDataRequestSchema,
     UpdateVendorDataRequestSchema,
     GetVendorDataResponseDto,
+    MetadataEntrySchema,
 } from "@/client"
 
 interface CreateVendorDataDialogProps {
@@ -67,6 +69,16 @@ export function CreateVendorDataDialog({
         return "apiKey"
     })
 
+    const [selectedVendor, setSelectedVendor] = useState(
+        isEdit && vendorData ? vendorData.forApi : "",
+    )
+
+    useEffect(() => {
+        if (isOpen && !isEdit) {
+            setSelectedVendor("")
+        }
+    }, [isOpen, isEdit])
+
     const createMutation = useMutation(addVendorDataMutation())
     const updateMutation = useMutation(updateVendorDataMutation())
     const isPending = createMutation.isPending || updateMutation.isPending
@@ -74,6 +86,32 @@ export function CreateVendorDataDialog({
     const { data: implementedVendorsData } = useQuery(
         implementedVendorsOptions(),
     )
+
+    const { data: definitionsData } = useQuery({
+        ...getVendorSpecificDefinitionsOptions({
+            path: { forVendor: selectedVendor },
+        }),
+        enabled: !!selectedVendor,
+    })
+
+    const vendorSpecificFields = definitionsData?.vendorSpecificFields ?? []
+
+    const getMetadataValue = (fieldName: string) =>
+        vendorData?.metadata?.find((m) => m.key === fieldName)?.value ?? ""
+
+    const mapFieldType = (type: string) => {
+        switch (type) {
+            case "EMAIL":
+                return "email"
+            case "PASSWORD":
+                return "password"
+            case "NUMBER":
+                return "number"
+            case "TEXT":
+            default:
+                return "text"
+        }
+    }
 
     const handleOpenChange = (open: boolean) => {
         if (openProp !== undefined) {
@@ -91,6 +129,13 @@ export function CreateVendorDataDialog({
 
         const formData = new FormData(e.currentTarget)
         const baseUrl = formData.get("baseUrl") as string
+
+        const metadata: Array<MetadataEntrySchema> = vendorSpecificFields
+            .map((field) => ({
+                key: field.name,
+                value: formData.get(`metadata.${field.name}`) as string,
+            }))
+            .filter((entry) => entry.value)
 
         try {
             if (isEdit) {
@@ -115,6 +160,10 @@ export function CreateVendorDataDialog({
                     }
                 }
 
+                if (metadata.length > 0) {
+                    payload.metadata = metadata
+                }
+
                 await updateMutation.mutateAsync({
                     body: payload,
                 })
@@ -137,6 +186,10 @@ export function CreateVendorDataDialog({
                         payload.apiUsername = apiUsername
                         payload.apiPassword = apiPassword
                     }
+                }
+
+                if (metadata.length > 0) {
+                    payload.metadata = metadata
                 }
 
                 await createMutation.mutateAsync({
@@ -192,9 +245,8 @@ export function CreateVendorDataDialog({
                                     name="forApi"
                                     required={!isEdit}
                                     disabled={isEdit}
-                                    defaultValue={
-                                        isEdit ? vendorData?.forApi : undefined
-                                    }
+                                    value={selectedVendor}
+                                    onValueChange={setSelectedVendor}
                                 >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select an API" />
@@ -308,6 +360,41 @@ export function CreateVendorDataDialog({
                                 </div>
                             </TabsContent>
                         </Tabs>
+
+                        {vendorSpecificFields.length > 0 && (
+                            <div className="space-y-4 border-t pt-4">
+                                <p className="text-sm font-medium text-muted-foreground">
+                                    Vendor-specific fields
+                                </p>
+                                {vendorSpecificFields.map((field) => (
+                                    <div
+                                        key={`${selectedVendor}-${field.name}`}
+                                        className="grid grid-cols-4 items-center gap-4"
+                                    >
+                                        <Label
+                                            htmlFor={field.name}
+                                            className="text-right"
+                                        >
+                                            {field.name}
+                                        </Label>
+                                        <Input
+                                            id={field.name}
+                                            name={`metadata.${field.name}`}
+                                            type={mapFieldType(field.type)}
+                                            className="col-span-3"
+                                            required
+                                            defaultValue={
+                                                isEdit
+                                                    ? getMetadataValue(
+                                                          field.name,
+                                                      )
+                                                    : undefined
+                                            }
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {apiError && (
