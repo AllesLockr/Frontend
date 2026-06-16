@@ -25,9 +25,10 @@ import { ChevronLeft, ChevronRight, RefreshCw } from "lucide-react"
 import type { LockSchema } from "@/client/types.gen.ts"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
+import { CreateLockDialog } from "@/dialog/createLock/CreateLockDialog.tsx"
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50, 100]
-const MAX_VISIBLE_METADATA = 2
+const MAX_VISIBLE_METADATA = 3
 
 function VendorBadge({ lock }: { lock: LockSchema }) {
     return <Badge variant="secondary">{lock.apiIdentity?.api ?? "Local"}</Badge>
@@ -120,7 +121,10 @@ export function Locks() {
         <div className="space-y-4">
             <section className="flex items-center justify-between">
                 <h2 className="text-2xl font-semibold">Locks</h2>
-                {syncButton}
+                <div className="flex items-center gap-2">
+                    {syncButton}
+                    <CreateLockDialog onSuccess={() => fetchLocks(page)} />
+                </div>
             </section>
 
             <Table>

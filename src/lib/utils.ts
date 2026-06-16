@@ -13,3 +13,19 @@ export function formatDate(timestamp: number | string | bigint): string {
     timeStyle: 'short',
   }).format(date);
 }
+
+export function mapFieldType(
+  type: string,
+): "email" | "password" | "number" | "text" {
+  switch (type) {
+    case "EMAIL":
+      return "email";
+    case "PASSWORD":
+      return "password";
+    case "NUMBER":
+      return "number";
+    case "TEXT":
+    default:
+      return "text";
+  }
+}

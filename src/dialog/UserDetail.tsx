@@ -49,6 +49,7 @@ import { toast } from "sonner"
 import { useState } from "react"
 import type { ErrorResponse } from "@/client"
 import { Check, Copy, KeyRound, Pencil, ShieldAlert, ShieldCheck, UserCheck, UserX } from "lucide-react"
+import { useAuth } from "@/context/AuthContext.tsx"
 
 // Adjust these to match your actual role enum/type
 const ROLES = ["ADMIN", "USER"] as const
@@ -77,6 +78,9 @@ export function UserDetail({
     onOpenChange,
     onRefresh,
 }: UserDetailProps) {
+    const { user: currentUser } = useAuth()
+    const isAdmin = currentUser?.role === "ADMIN"
+
     const [isEditing, setIsEditing] = useState(false)
     const [firstname, setFirstname] = useState("")
     const [lastname, setLastname] = useState("")
@@ -273,7 +277,7 @@ export function UserDetail({
                         <h3 className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
                             Profile
                         </h3>
-                        {!isEditing && (
+                        {!isEditing && isAdmin && (
                             <Button
                                 variant="ghost"
                                 size="sm"
@@ -378,97 +382,142 @@ export function UserDetail({
                     )}
                 </section>
 
-                <Separator className="my-6" />
+                {isAdmin && (
+                    <>
+                        <Separator className="my-6" />
 
-                {/* Role Section */}
-                <section className="space-y-3">
-                    <h3 className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
-                        Role
-                    </h3>
-                    <div className="flex items-center gap-3">
-                        <ShieldCheck className="h-4 w-4 shrink-0 text-muted-foreground" />
-                        <Select
-                            value={user.role ?? ""}
-                            onValueChange={handleRoleChange}
-                            disabled={isBusy}
-                        >
-                            <SelectTrigger className="w-40">
-                                <SelectValue placeholder="Select role" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {ROLES.map((role) => (
-                                    <SelectItem key={role} value={role}>
-                                        {role}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        {isRolePending && (
-                            <span className="text-xs text-muted-foreground">
-                                Saving...
-                            </span>
-                        )}
-                    </div>
-                </section>
-
-                <Separator className="my-6" />
-
-                {/* Actions Section */}
-                <section className="space-y-3">
-                    <h3 className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
-                        Actions
-                    </h3>
-
-                    <div className="flex flex-col gap-2">
-                        {/* Activate / Deactivate */}
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    className="justify-start gap-2"
+                        {/* Role Section */}
+                        <section className="space-y-3">
+                            <h3 className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
+                                Role
+                            </h3>
+                            <div className="flex items-center gap-3">
+                                <ShieldCheck className="h-4 w-4 shrink-0 text-muted-foreground" />
+                                <Select
+                                    value={user.role ?? ""}
+                                    onValueChange={handleRoleChange}
                                     disabled={isBusy}
                                 >
-                                    {user.isActive ? (
-                                        <>
-                                            <UserX className="h-4 w-4" />
-                                            Deactivate user
-                                        </>
-                                    ) : (
-                                        <>
-                                            <UserCheck className="h-4 w-4" />
-                                            Activate user
-                                        </>
-                                    )}
-                                </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                        {user.isActive
-                                            ? "Deactivate user?"
-                                            : "Activate user?"}
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        {user.isActive
-                                            ? `${user.firstname ?? user.username} will lose access to the system immediately.`
-                                            : `${user.firstname ?? user.username} will regain access to the system.`}
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel>
-                                        Cancel
-                                    </AlertDialogCancel>
-                                    <AlertDialogAction
-                                        onClick={handleToggleActive}
-                                    >
-                                        {user.isActive
-                                            ? "Deactivate"
-                                            : "Activate"}
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
+                                    <SelectTrigger className="w-40">
+                                        <SelectValue placeholder="Select role" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {ROLES.map((role) => (
+                                            <SelectItem key={role} value={role}>
+                                                {role}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                {isRolePending && (
+                                    <span className="text-xs text-muted-foreground">
+                                        Saving...
+                                    </span>
+                                )}
+                            </div>
+                        </section>
+                    </>
+                )}
 
+                {isAdmin && (
+                    <>
+                        <Separator className="my-6" />
+
+                        {/* Actions Section */}
+                        <section className="space-y-3">
+                            <h3 className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
+                                Actions
+                            </h3>
+
+                            <div className="flex flex-col gap-2">
+                                {/* Activate / Deactivate */}
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            className="justify-start gap-2"
+                                            disabled={isBusy}
+                                        >
+                                            {user.isActive ? (
+                                                <>
+                                                    <UserX className="h-4 w-4" />
+                                                    Deactivate user
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <UserCheck className="h-4 w-4" />
+                                                    Activate user
+                                                </>
+                                            )}
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>
+                                                {user.isActive
+                                                    ? "Deactivate user?"
+                                                    : "Activate user?"}
+                                            </AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                {user.isActive
+                                                    ? `${user.firstname ?? user.username} will lose access to the system immediately.`
+                                                    : `${user.firstname ?? user.username} will regain access to the system.`}
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>
+                                                Cancel
+                                            </AlertDialogCancel>
+                                            <AlertDialogAction
+                                                onClick={handleToggleActive}
+                                            >
+                                                {user.isActive
+                                                    ? "Deactivate"
+                                                    : "Activate"}
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+
+                                {/* Request Password Reset */}
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            className="justify-start gap-2"
+                                            disabled={isBusy}
+                                        >
+                                            <KeyRound className="h-4 w-4" />
+                                            Request password reset
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>
+                                                Request password reset?
+                                            </AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                {user.firstname ?? user.username} will
+                                                be required to set a new password on
+                                                their next login.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>
+                                                Cancel
+                                            </AlertDialogCancel>
+                                            <AlertDialogAction
+                                                onClick={handleRequestPasswordReset}
+                                            >
+                                                Request reset
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                            </div>
+                        </section>
+                    </>
+                )}
                         {/* Request Password Reset */}
                         <AlertDialog>
                             <AlertDialogTrigger asChild>
