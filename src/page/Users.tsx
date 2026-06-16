@@ -82,6 +82,7 @@ export function Users() {
     const users = pageInfo?.content ?? []
 
     const handleRowClick = (user: (typeof users)[number]) => {
+        if (currentUser?.role !== "ADMIN") return
         setSelectedUser(user)
         setDetailOpen(true)
     }
@@ -100,7 +101,9 @@ export function Users() {
                             onChange={(e) => setSearch(e.target.value)}
                         />
                     </div>
-                    <CreateUserDialog onSuccess={() => fetchUsers(page)} />
+                    {currentUser?.role === "ADMIN" && (
+                        <CreateUserDialog onSuccess={() => fetchUsers(page)} />
+                    )}
                 </div>
             </section>
 
@@ -147,7 +150,7 @@ export function Users() {
                         users.map((user) => (
                             <TableRow
                                 key={user.id}
-                                className="cursor-pointer"
+                                className={currentUser?.role === "ADMIN" ? "cursor-pointer" : ""}
                                 onClick={() => handleRowClick(user)}
                             >
                                 <TableCell>{user.firstname}</TableCell>
