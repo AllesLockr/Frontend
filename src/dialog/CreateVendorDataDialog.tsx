@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Plus } from "lucide-react"
+import { Info, Plus } from "lucide-react"
 import {
     Dialog,
     DialogContent,
@@ -13,6 +13,12 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 import { useMutation, useQuery } from "@tanstack/react-query"
 import {
@@ -34,6 +40,7 @@ import type {
     GetVendorDataResponseDto,
     MetadataEntrySchema,
 } from "@/client"
+import React from "react"
 
 interface CreateVendorDataDialogProps {
     onSuccess: () => void
@@ -63,8 +70,8 @@ export function CreateVendorDataDialog({
             return vendorData.apiKey
                 ? "apiKey"
                 : vendorData.apiUsername
-                  ? "baseAuth"
-                  : "apiKey"
+                    ? "baseAuth"
+                    : "apiKey"
         }
         return "apiKey"
     })
@@ -222,7 +229,7 @@ export function CreateVendorDataDialog({
                     </Button>
                 </DialogTrigger>
             ) : null}
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="max-w-[90vw] w-fit">
                 <form onSubmit={handleSubmit}>
                     <DialogHeader>
                         <DialogTitle>
@@ -366,33 +373,47 @@ export function CreateVendorDataDialog({
                                 <p className="text-sm font-medium text-muted-foreground">
                                     Vendor-specific fields
                                 </p>
-                                {vendorSpecificFields.map((field) => (
-                                    <div
-                                        key={`${selectedVendor}-${field.name}`}
-                                        className="grid grid-cols-4 items-center gap-4"
-                                    >
-                                        <Label
-                                            htmlFor={field.name}
-                                            className="text-right"
+                                <div className="grid grid-cols-[auto_1fr] items-center gap-4">
+                                    {vendorSpecificFields.map((field) => (
+                                        <React.Fragment
+                                            key={`${selectedVendor}-${field.name}`}
                                         >
-                                            {field.name}
-                                        </Label>
-                                        <Input
-                                            id={field.name}
-                                            name={`metadata.${field.name}`}
-                                            type={mapFieldType(field.type)}
-                                            className="col-span-3"
-                                            required
-                                            defaultValue={
-                                                isEdit
-                                                    ? getMetadataValue(
-                                                          field.name,
-                                                      )
-                                                    : undefined
-                                            }
-                                        />
-                                    </div>
-                                ))}
+                                            <Label
+                                                htmlFor={field.name}
+                                                className="text-right whitespace-nowrap pr-2"
+                                            >
+                                                {field.name}
+                                                {field.description && (
+                                                    <TooltipProvider>
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <span className="ml-1 inline-flex align-middle">
+                                                                    <Info className="h-3 w-3 text-muted-foreground cursor-help shrink-0" />
+                                                                </span>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                <p>{field.description}</p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    </TooltipProvider>
+                                                )}
+                                            </Label>
+                                            <Input
+                                                id={field.name}
+                                                name={`metadata.${field.name}`}
+                                                type={mapFieldType(field.type)}
+                                                required
+                                                defaultValue={
+                                                    isEdit
+                                                        ? getMetadataValue(
+                                                            field.name,
+                                                        )
+                                                        : undefined
+                                                }
+                                            />
+                                        </React.Fragment>
+                                    ))}
+                                </div>
                             </div>
                         )}
                     </div>
