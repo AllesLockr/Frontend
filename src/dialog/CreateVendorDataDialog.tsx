@@ -40,6 +40,7 @@ import type {
     GetVendorDataResponseDto,
     MetadataEntrySchema,
 } from "@/client"
+import { mapFieldType } from "@/lib/utils"
 import React from "react"
 
 interface CreateVendorDataDialogProps {
@@ -99,20 +100,6 @@ export function CreateVendorDataDialog({
 
     const getMetadataValue = (fieldName: string) =>
         vendorData?.metadata?.find((m) => m.key === fieldName)?.value ?? ""
-
-    const mapFieldType = (type: string) => {
-        switch (type) {
-            case "EMAIL":
-                return "email"
-            case "PASSWORD":
-                return "password"
-            case "NUMBER":
-                return "number"
-            case "TEXT":
-            default:
-                return "text"
-        }
-    }
 
     const handleOpenChange = (open: boolean) => {
         if (open && !isEdit) {
