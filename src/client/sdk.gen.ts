@@ -15,6 +15,9 @@ import type {
     ChangeRoleData,
     ChangeRoleErrors,
     ChangeRoleResponses,
+    CreateLockData,
+    CreateLockErrors,
+    CreateLockResponses,
     CreatePersonData,
     CreatePersonErrors,
     CreatePersonResponses,
@@ -89,6 +92,9 @@ import type {
     SyncLocksData,
     SyncLocksErrors,
     SyncLocksResponses,
+    UpdateLockData,
+    UpdateLockErrors,
+    UpdateLockResponses,
     UpdateVendorDataData,
     UpdateVendorDataErrors,
     UpdateVendorDataResponses,
@@ -143,6 +149,25 @@ export const updateVendorData = <ThrowOnError extends boolean = false>(
         ThrowOnError
     >({
         url: "/api/v1/vendor-data",
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            ...options.headers,
+        },
+    })
+
+/**
+ * Update a lock.
+ */
+export const updateLock = <ThrowOnError extends boolean = false>(
+    options: Options<UpdateLockData, ThrowOnError>
+) =>
+    (options.client ?? client).put<
+        UpdateLockResponses,
+        UpdateLockErrors,
+        ThrowOnError
+    >({
+        url: "/api/v1/lock/{id}",
         ...options,
         headers: {
             "Content-Type": "application/json",
@@ -404,6 +429,18 @@ export const syncLocks = <ThrowOnError extends boolean = false>(
         SyncLocksErrors,
         ThrowOnError
     >({ url: "/api/v1/lock/sync", ...options })
+
+/**
+ * Create a new lock for an implemented vendor.
+ */
+export const createLock = <ThrowOnError extends boolean = false>(
+    options: Options<CreateLockData, ThrowOnError>
+) =>
+    (options.client ?? client).post<
+        CreateLockResponses,
+        CreateLockErrors,
+        ThrowOnError
+    >({ url: "/api/v1/lock/create/{forVendor}", ...options })
 
 /**
  * Get all locks paginated.

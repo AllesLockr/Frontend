@@ -12,6 +12,7 @@ import {
     addVendorData,
     adminResetPassword,
     changeRole,
+    createLock,
     createPerson,
     createUser,
     deactivateUser,
@@ -38,6 +39,7 @@ import {
     resetPassword,
     revokeAccess,
     syncLocks,
+    updateLock,
     updateVendorData,
 } from "../sdk.gen"
 import type {
@@ -51,6 +53,9 @@ import type {
     AdminResetPasswordResponse,
     ChangeRoleData,
     ChangeRoleError,
+    CreateLockData,
+    CreateLockError,
+    CreateLockResponse,
     CreatePersonData,
     CreatePersonError,
     CreatePersonResponse,
@@ -122,6 +127,9 @@ import type {
     SyncLocksData,
     SyncLocksError,
     SyncLocksResponse,
+    UpdateLockData,
+    UpdateLockError,
+    UpdateLockResponse,
     UpdateVendorDataData,
     UpdateVendorDataError,
     UpdateVendorDataResponse,
@@ -171,6 +179,33 @@ export const updateVendorDataMutation = (
     > = {
         mutationFn: async (fnOptions) => {
             const { data } = await updateVendorData({
+                ...options,
+                ...fnOptions,
+                throwOnError: true,
+            })
+            return data
+        },
+    }
+    return mutationOptions
+}
+
+/**
+ * Update a lock.
+ */
+export const updateLockMutation = (
+    options?: Partial<Options<UpdateLockData>>
+): UseMutationOptions<
+    UpdateLockResponse,
+    UpdateLockError,
+    Options<UpdateLockData>
+> => {
+    const mutationOptions: UseMutationOptions<
+        UpdateLockResponse,
+        UpdateLockError,
+        Options<UpdateLockData>
+    > = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await updateLock({
                 ...options,
                 ...fnOptions,
                 throwOnError: true,
@@ -537,6 +572,33 @@ export const syncLocksMutation = (
     > = {
         mutationFn: async (fnOptions) => {
             const { data } = await syncLocks({
+                ...options,
+                ...fnOptions,
+                throwOnError: true,
+            })
+            return data
+        },
+    }
+    return mutationOptions
+}
+
+/**
+ * Create a new lock for an implemented vendor.
+ */
+export const createLockMutation = (
+    options?: Partial<Options<CreateLockData>>
+): UseMutationOptions<
+    CreateLockResponse,
+    CreateLockError,
+    Options<CreateLockData>
+> => {
+    const mutationOptions: UseMutationOptions<
+        CreateLockResponse,
+        CreateLockError,
+        Options<CreateLockData>
+    > = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await createLock({
                 ...options,
                 ...fnOptions,
                 throwOnError: true,
