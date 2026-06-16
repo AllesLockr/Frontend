@@ -3,27 +3,51 @@
 import type { Client, Options as Options2, TDataShape } from "./client"
 import { client } from "./client.gen"
 import type {
+    ActivateUserData,
+    ActivateUserErrors,
+    ActivateUserResponses,
     AddVendorDataData,
     AddVendorDataErrors,
     AddVendorDataResponses,
+    ChangeRoleData,
+    ChangeRoleErrors,
+    ChangeRoleResponses,
     CreatePersonData,
     CreatePersonErrors,
     CreatePersonResponses,
     CreateUserData,
     CreateUserErrors,
     CreateUserResponses,
+    DeactivateUserData,
+    DeactivateUserErrors,
+    DeactivateUserResponses,
     DeletePersonData,
     DeletePersonErrors,
     DeletePersonResponses,
+    DeleteVendorDataData,
+    DeleteVendorDataErrors,
+    DeleteVendorDataResponses,
+    EditUserData,
+    EditUserErrors,
+    EditUserResponses,
+    GetAccessGrantsPagedData,
+    GetAccessGrantsPagedErrors,
+    GetAccessGrantsPagedResponses,
     GetAllAuditLogsPagedData,
     GetAllAuditLogsPagedErrors,
     GetAllAuditLogsPagedResponses,
     GetAllVendorDataData,
     GetAllVendorDataErrors,
     GetAllVendorDataResponses,
+    GetLocksCountData,
+    GetLocksCountErrors,
+    GetLocksCountResponses,
     GetLocksPagedData,
     GetLocksPagedErrors,
     GetLocksPagedResponses,
+    GetPersonByIdData,
+    GetPersonByIdErrors,
+    GetPersonByIdResponses,
     GetPersonsCountData,
     GetPersonsCountErrors,
     GetPersonsCountResponses,
@@ -39,17 +63,32 @@ import type {
     GetVendorDataData,
     GetVendorDataErrors,
     GetVendorDataResponses,
+    GetVendorSpecificDefinitionsData,
+    GetVendorSpecificDefinitionsErrors,
+    GetVendorSpecificDefinitionsResponses,
+    GrantAccessData,
+    GrantAccessErrors,
+    GrantAccessResponses,
     ImplementedVendorsData,
     ImplementedVendorsResponses,
     LoginData,
     LoginErrors,
     LoginResponses,
+    RequestPasswordChangeData,
+    RequestPasswordChangeErrors,
+    RequestPasswordChangeResponses,
     ResetPasswordData,
     ResetPasswordErrors,
     ResetPasswordResponses,
+    RevokeAccessData,
+    RevokeAccessErrors,
+    RevokeAccessResponses,
     SyncLocksData,
     SyncLocksErrors,
     SyncLocksResponses,
+    UpdateVendorDataData,
+    UpdateVendorDataErrors,
+    UpdateVendorDataResponses,
 } from "./types.gen"
 
 export type Options<
@@ -71,7 +110,7 @@ export type Options<
 }
 
 /**
- * Add new credentials for an implemented vendor.
+ * Add new credentials for an implemented vendor. Check /definitions/{forVendor} for required metadata fields.
  */
 export const addVendorData = <ThrowOnError extends boolean = false>(
     options: Options<AddVendorDataData, ThrowOnError>
@@ -79,6 +118,25 @@ export const addVendorData = <ThrowOnError extends boolean = false>(
     (options.client ?? client).post<
         AddVendorDataResponses,
         AddVendorDataErrors,
+        ThrowOnError
+    >({
+        url: "/api/v1/vendor-data",
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            ...options.headers,
+        },
+    })
+
+/**
+ * Update one vendor-data.
+ */
+export const updateVendorData = <ThrowOnError extends boolean = false>(
+    options: Options<UpdateVendorDataData, ThrowOnError>
+) =>
+    (options.client ?? client).put<
+        UpdateVendorDataResponses,
+        UpdateVendorDataErrors,
         ThrowOnError
     >({
         url: "/api/v1/vendor-data",
@@ -109,6 +167,63 @@ export const resetPassword = <ThrowOnError extends boolean = false>(
     })
 
 /**
+ * Request a password change for a user (admin only).
+ */
+export const requestPasswordChange = <ThrowOnError extends boolean = false>(
+    options: Options<RequestPasswordChangeData, ThrowOnError>
+) =>
+    (options.client ?? client).post<
+        RequestPasswordChangeResponses,
+        RequestPasswordChangeErrors,
+        ThrowOnError
+    >({
+        url: "/api/v1/user/request-password-change",
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            ...options.headers,
+        },
+    })
+
+/**
+ * Edit a user's details (admin only).
+ */
+export const editUser = <ThrowOnError extends boolean = false>(
+    options: Options<EditUserData, ThrowOnError>
+) =>
+    (options.client ?? client).post<
+        EditUserResponses,
+        EditUserErrors,
+        ThrowOnError
+    >({
+        url: "/api/v1/user/edit-user",
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            ...options.headers,
+        },
+    })
+
+/**
+ * Deactivate a user (admin only).
+ */
+export const deactivateUser = <ThrowOnError extends boolean = false>(
+    options: Options<DeactivateUserData, ThrowOnError>
+) =>
+    (options.client ?? client).post<
+        DeactivateUserResponses,
+        DeactivateUserErrors,
+        ThrowOnError
+    >({
+        url: "/api/v1/user/deactivate-user",
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            ...options.headers,
+        },
+    })
+
+/**
  * Create a new user (admin only).
  */
 export const createUser = <ThrowOnError extends boolean = false>(
@@ -120,6 +235,25 @@ export const createUser = <ThrowOnError extends boolean = false>(
         ThrowOnError
     >({
         url: "/api/v1/user/create",
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            ...options.headers,
+        },
+    })
+
+/**
+ * Change a user's role (admin only).
+ */
+export const changeRole = <ThrowOnError extends boolean = false>(
+    options: Options<ChangeRoleData, ThrowOnError>
+) =>
+    (options.client ?? client).post<
+        ChangeRoleResponses,
+        ChangeRoleErrors,
+        ThrowOnError
+    >({
+        url: "/api/v1/user/change-role",
         ...options,
         headers: {
             "Content-Type": "application/json",
@@ -154,6 +288,25 @@ export const getUsersPaged = <ThrowOnError extends boolean = false>(
         ThrowOnError
     >({
         url: "/api/v1/user/all",
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            ...options.headers,
+        },
+    })
+
+/**
+ * Activate a user (admin only).
+ */
+export const activateUser = <ThrowOnError extends boolean = false>(
+    options: Options<ActivateUserData, ThrowOnError>
+) =>
+    (options.client ?? client).post<
+        ActivateUserResponses,
+        ActivateUserErrors,
+        ThrowOnError
+    >({
+        url: "/api/v1/user/activate-user",
         ...options,
         headers: {
             "Content-Type": "application/json",
@@ -269,6 +422,75 @@ export const getAllAuditLogsPaged = <ThrowOnError extends boolean = false>(
     })
 
 /**
+ * Grant a person permission to open a lock for a time window.
+ */
+export const grantAccess = <ThrowOnError extends boolean = false>(
+    options: Options<GrantAccessData, ThrowOnError>
+) =>
+    (options.client ?? client).post<
+        GrantAccessResponses,
+        GrantAccessErrors,
+        ThrowOnError
+    >({
+        url: "/api/v1/access-grant",
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            ...options.headers,
+        },
+    })
+
+/**
+ * Revoke a person's permission to open a lock.
+ */
+export const revokeAccess = <ThrowOnError extends boolean = false>(
+    options: Options<RevokeAccessData, ThrowOnError>
+) =>
+    (options.client ?? client).post<
+        RevokeAccessResponses,
+        RevokeAccessErrors,
+        ThrowOnError
+    >({
+        url: "/api/v1/access-grant/revoke",
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            ...options.headers,
+        },
+    })
+
+/**
+ * Get access grants paginated, optionally filtered by person or lock.
+ */
+export const getAccessGrantsPaged = <ThrowOnError extends boolean = false>(
+    options: Options<GetAccessGrantsPagedData, ThrowOnError>
+) =>
+    (options.client ?? client).post<
+        GetAccessGrantsPagedResponses,
+        GetAccessGrantsPagedErrors,
+        ThrowOnError
+    >({
+        url: "/api/v1/access-grant/all",
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            ...options.headers,
+        },
+    })
+
+/**
+ * Delete one vendor-data by id.
+ */
+export const deleteVendorData = <ThrowOnError extends boolean = false>(
+    options: Options<DeleteVendorDataData, ThrowOnError>
+) =>
+    (options.client ?? client).delete<
+        DeleteVendorDataResponses,
+        DeleteVendorDataErrors,
+        ThrowOnError
+    >({ url: "/api/v1/vendor-data/{id}", ...options })
+
+/**
  * Get one Vendor-Data.
  */
 export const getVendorData = <ThrowOnError extends boolean = false>(
@@ -291,6 +513,20 @@ export const implementedVendors = <ThrowOnError extends boolean = false>(
         unknown,
         ThrowOnError
     >({ url: "/api/v1/vendor-data/implemented", ...options })
+
+/**
+ * Get vendor specific fields that should be sent when creating a new vendor-data.
+ */
+export const getVendorSpecificDefinitions = <
+    ThrowOnError extends boolean = false,
+>(
+    options: Options<GetVendorSpecificDefinitionsData, ThrowOnError>
+) =>
+    (options.client ?? client).get<
+        GetVendorSpecificDefinitionsResponses,
+        GetVendorSpecificDefinitionsErrors,
+        ThrowOnError
+    >({ url: "/api/v1/vendor-data/definitions/{forVendor}", ...options })
 
 /**
  * Get all Vendor-Datas.
@@ -317,6 +553,18 @@ export const getUser = <ThrowOnError extends boolean = false>(
     >({ url: "/api/v1/user/{id}", ...options })
 
 /**
+ * Get an existing person by id.
+ */
+export const getPersonById = <ThrowOnError extends boolean = false>(
+    options: Options<GetPersonByIdData, ThrowOnError>
+) =>
+    (options.client ?? client).get<
+        GetPersonByIdResponses,
+        GetPersonByIdErrors,
+        ThrowOnError
+    >({ url: "/api/v1/person/{id}", ...options })
+
+/**
  * Get the total number of persons.
  */
 export const getPersonsCount = <ThrowOnError extends boolean = false>(
@@ -327,3 +575,15 @@ export const getPersonsCount = <ThrowOnError extends boolean = false>(
         GetPersonsCountErrors,
         ThrowOnError
     >({ url: "/api/v1/person/count", ...options })
+
+/**
+ * Get the total number of locks.
+ */
+export const getLocksCount = <ThrowOnError extends boolean = false>(
+    options?: Options<GetLocksCountData, ThrowOnError>
+) =>
+    (options?.client ?? client).get<
+        GetLocksCountResponses,
+        GetLocksCountErrors,
+        ThrowOnError
+    >({ url: "/api/v1/lock/count", ...options })

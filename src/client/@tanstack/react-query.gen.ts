@@ -8,46 +8,79 @@ import {
 
 import { client } from "../client.gen"
 import {
+    activateUser,
     addVendorData,
+    changeRole,
     createPerson,
     createUser,
+    deactivateUser,
     deletePerson,
+    deleteVendorData,
+    editUser,
+    getAccessGrantsPaged,
     getAllAuditLogsPaged,
     getAllVendorData,
+    getLocksCount,
     getLocksPaged,
+    getPersonById,
     getPersonsCount,
     getPersonsPaged,
     getUser,
     getUsersPaged,
     getVendorData,
+    getVendorSpecificDefinitions,
+    grantAccess,
     implementedVendors,
     login,
     type Options,
+    requestPasswordChange,
     resetPassword,
+    revokeAccess,
     syncLocks,
+    updateVendorData,
 } from "../sdk.gen"
 import type {
+    ActivateUserData,
+    ActivateUserError,
     AddVendorDataData,
     AddVendorDataError,
     AddVendorDataResponse,
+    ChangeRoleData,
+    ChangeRoleError,
     CreatePersonData,
     CreatePersonError,
     CreatePersonResponse,
     CreateUserData,
     CreateUserError,
     CreateUserResponse,
+    DeactivateUserData,
+    DeactivateUserError,
     DeletePersonData,
     DeletePersonError,
     DeletePersonResponse,
+    DeleteVendorDataData,
+    DeleteVendorDataError,
+    DeleteVendorDataResponse,
+    EditUserData,
+    EditUserError,
+    GetAccessGrantsPagedData,
+    GetAccessGrantsPagedError,
+    GetAccessGrantsPagedResponse,
     GetAllAuditLogsPagedData,
     GetAllAuditLogsPagedError,
     GetAllAuditLogsPagedResponse,
     GetAllVendorDataData,
     GetAllVendorDataError,
     GetAllVendorDataResponse,
+    GetLocksCountData,
+    GetLocksCountError,
+    GetLocksCountResponse,
     GetLocksPagedData,
     GetLocksPagedError,
     GetLocksPagedResponse,
+    GetPersonByIdData,
+    GetPersonByIdError,
+    GetPersonByIdResponse,
     GetPersonsCountData,
     GetPersonsCountError,
     GetPersonsCountResponse,
@@ -63,21 +96,35 @@ import type {
     GetVendorDataData,
     GetVendorDataError,
     GetVendorDataResponse,
+    GetVendorSpecificDefinitionsData,
+    GetVendorSpecificDefinitionsError,
+    GetVendorSpecificDefinitionsResponse,
+    GrantAccessData,
+    GrantAccessError,
+    GrantAccessResponse,
     ImplementedVendorsData,
     ImplementedVendorsResponse,
     LoginData,
     LoginError,
     LoginResponse,
+    RequestPasswordChangeData,
+    RequestPasswordChangeError,
     ResetPasswordData,
     ResetPasswordError,
     ResetPasswordResponse,
+    RevokeAccessData,
+    RevokeAccessError,
+    RevokeAccessResponse,
     SyncLocksData,
     SyncLocksError,
     SyncLocksResponse,
+    UpdateVendorDataData,
+    UpdateVendorDataError,
+    UpdateVendorDataResponse,
 } from "../types.gen"
 
 /**
- * Add new credentials for an implemented vendor.
+ * Add new credentials for an implemented vendor. Check /definitions/{forVendor} for required metadata fields.
  */
 export const addVendorDataMutation = (
     options?: Partial<Options<AddVendorDataData>>
@@ -93,6 +140,33 @@ export const addVendorDataMutation = (
     > = {
         mutationFn: async (fnOptions) => {
             const { data } = await addVendorData({
+                ...options,
+                ...fnOptions,
+                throwOnError: true,
+            })
+            return data
+        },
+    }
+    return mutationOptions
+}
+
+/**
+ * Update one vendor-data.
+ */
+export const updateVendorDataMutation = (
+    options?: Partial<Options<UpdateVendorDataData>>
+): UseMutationOptions<
+    UpdateVendorDataResponse,
+    UpdateVendorDataError,
+    Options<UpdateVendorDataData>
+> => {
+    const mutationOptions: UseMutationOptions<
+        UpdateVendorDataResponse,
+        UpdateVendorDataError,
+        Options<UpdateVendorDataData>
+    > = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await updateVendorData({
                 ...options,
                 ...fnOptions,
                 throwOnError: true,
@@ -131,6 +205,83 @@ export const resetPasswordMutation = (
 }
 
 /**
+ * Request a password change for a user (admin only).
+ */
+export const requestPasswordChangeMutation = (
+    options?: Partial<Options<RequestPasswordChangeData>>
+): UseMutationOptions<
+    unknown,
+    RequestPasswordChangeError,
+    Options<RequestPasswordChangeData>
+> => {
+    const mutationOptions: UseMutationOptions<
+        unknown,
+        RequestPasswordChangeError,
+        Options<RequestPasswordChangeData>
+    > = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await requestPasswordChange({
+                ...options,
+                ...fnOptions,
+                throwOnError: true,
+            })
+            return data
+        },
+    }
+    return mutationOptions
+}
+
+/**
+ * Edit a user's details (admin only).
+ */
+export const editUserMutation = (
+    options?: Partial<Options<EditUserData>>
+): UseMutationOptions<unknown, EditUserError, Options<EditUserData>> => {
+    const mutationOptions: UseMutationOptions<
+        unknown,
+        EditUserError,
+        Options<EditUserData>
+    > = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await editUser({
+                ...options,
+                ...fnOptions,
+                throwOnError: true,
+            })
+            return data
+        },
+    }
+    return mutationOptions
+}
+
+/**
+ * Deactivate a user (admin only).
+ */
+export const deactivateUserMutation = (
+    options?: Partial<Options<DeactivateUserData>>
+): UseMutationOptions<
+    unknown,
+    DeactivateUserError,
+    Options<DeactivateUserData>
+> => {
+    const mutationOptions: UseMutationOptions<
+        unknown,
+        DeactivateUserError,
+        Options<DeactivateUserData>
+    > = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await deactivateUser({
+                ...options,
+                ...fnOptions,
+                throwOnError: true,
+            })
+            return data
+        },
+    }
+    return mutationOptions
+}
+
+/**
  * Create a new user (admin only).
  */
 export const createUserMutation = (
@@ -147,6 +298,29 @@ export const createUserMutation = (
     > = {
         mutationFn: async (fnOptions) => {
             const { data } = await createUser({
+                ...options,
+                ...fnOptions,
+                throwOnError: true,
+            })
+            return data
+        },
+    }
+    return mutationOptions
+}
+
+/**
+ * Change a user's role (admin only).
+ */
+export const changeRoleMutation = (
+    options?: Partial<Options<ChangeRoleData>>
+): UseMutationOptions<unknown, ChangeRoleError, Options<ChangeRoleData>> => {
+    const mutationOptions: UseMutationOptions<
+        unknown,
+        ChangeRoleError,
+        Options<ChangeRoleData>
+    > = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await changeRole({
                 ...options,
                 ...fnOptions,
                 throwOnError: true,
@@ -197,6 +371,33 @@ export const getUsersPagedMutation = (
     > = {
         mutationFn: async (fnOptions) => {
             const { data } = await getUsersPaged({
+                ...options,
+                ...fnOptions,
+                throwOnError: true,
+            })
+            return data
+        },
+    }
+    return mutationOptions
+}
+
+/**
+ * Activate a user (admin only).
+ */
+export const activateUserMutation = (
+    options?: Partial<Options<ActivateUserData>>
+): UseMutationOptions<
+    unknown,
+    ActivateUserError,
+    Options<ActivateUserData>
+> => {
+    const mutationOptions: UseMutationOptions<
+        unknown,
+        ActivateUserError,
+        Options<ActivateUserData>
+    > = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await activateUser({
                 ...options,
                 ...fnOptions,
                 throwOnError: true,
@@ -369,6 +570,114 @@ export const getAllAuditLogsPagedMutation = (
     return mutationOptions
 }
 
+/**
+ * Grant a person permission to open a lock for a time window.
+ */
+export const grantAccessMutation = (
+    options?: Partial<Options<GrantAccessData>>
+): UseMutationOptions<
+    GrantAccessResponse,
+    GrantAccessError,
+    Options<GrantAccessData>
+> => {
+    const mutationOptions: UseMutationOptions<
+        GrantAccessResponse,
+        GrantAccessError,
+        Options<GrantAccessData>
+    > = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await grantAccess({
+                ...options,
+                ...fnOptions,
+                throwOnError: true,
+            })
+            return data
+        },
+    }
+    return mutationOptions
+}
+
+/**
+ * Revoke a person's permission to open a lock.
+ */
+export const revokeAccessMutation = (
+    options?: Partial<Options<RevokeAccessData>>
+): UseMutationOptions<
+    RevokeAccessResponse,
+    RevokeAccessError,
+    Options<RevokeAccessData>
+> => {
+    const mutationOptions: UseMutationOptions<
+        RevokeAccessResponse,
+        RevokeAccessError,
+        Options<RevokeAccessData>
+    > = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await revokeAccess({
+                ...options,
+                ...fnOptions,
+                throwOnError: true,
+            })
+            return data
+        },
+    }
+    return mutationOptions
+}
+
+/**
+ * Get access grants paginated, optionally filtered by person or lock.
+ */
+export const getAccessGrantsPagedMutation = (
+    options?: Partial<Options<GetAccessGrantsPagedData>>
+): UseMutationOptions<
+    GetAccessGrantsPagedResponse,
+    GetAccessGrantsPagedError,
+    Options<GetAccessGrantsPagedData>
+> => {
+    const mutationOptions: UseMutationOptions<
+        GetAccessGrantsPagedResponse,
+        GetAccessGrantsPagedError,
+        Options<GetAccessGrantsPagedData>
+    > = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await getAccessGrantsPaged({
+                ...options,
+                ...fnOptions,
+                throwOnError: true,
+            })
+            return data
+        },
+    }
+    return mutationOptions
+}
+
+/**
+ * Delete one vendor-data by id.
+ */
+export const deleteVendorDataMutation = (
+    options?: Partial<Options<DeleteVendorDataData>>
+): UseMutationOptions<
+    DeleteVendorDataResponse,
+    DeleteVendorDataError,
+    Options<DeleteVendorDataData>
+> => {
+    const mutationOptions: UseMutationOptions<
+        DeleteVendorDataResponse,
+        DeleteVendorDataError,
+        Options<DeleteVendorDataData>
+    > = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await deleteVendorData({
+                ...options,
+                ...fnOptions,
+                throwOnError: true,
+            })
+            return data
+        },
+    }
+    return mutationOptions
+}
+
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, "baseUrl" | "body" | "headers" | "path" | "query"> & {
         _id: string
@@ -462,6 +771,34 @@ export const implementedVendorsOptions = (
         queryKey: implementedVendorsQueryKey(options),
     })
 
+export const getVendorSpecificDefinitionsQueryKey = (
+    options: Options<GetVendorSpecificDefinitionsData>
+) => createQueryKey("getVendorSpecificDefinitions", options)
+
+/**
+ * Get vendor specific fields that should be sent when creating a new vendor-data.
+ */
+export const getVendorSpecificDefinitionsOptions = (
+    options: Options<GetVendorSpecificDefinitionsData>
+) =>
+    queryOptions<
+        GetVendorSpecificDefinitionsResponse,
+        GetVendorSpecificDefinitionsError,
+        GetVendorSpecificDefinitionsResponse,
+        ReturnType<typeof getVendorSpecificDefinitionsQueryKey>
+    >({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await getVendorSpecificDefinitions({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true,
+            })
+            return data
+        },
+        queryKey: getVendorSpecificDefinitionsQueryKey(options),
+    })
+
 export const getAllVendorDataQueryKey = (
     options?: Options<GetAllVendorDataData>
 ) => createQueryKey("getAllVendorData", options)
@@ -515,6 +852,31 @@ export const getUserOptions = (options: Options<GetUserData>) =>
         queryKey: getUserQueryKey(options),
     })
 
+export const getPersonByIdQueryKey = (options: Options<GetPersonByIdData>) =>
+    createQueryKey("getPersonById", options)
+
+/**
+ * Get an existing person by id.
+ */
+export const getPersonByIdOptions = (options: Options<GetPersonByIdData>) =>
+    queryOptions<
+        GetPersonByIdResponse,
+        GetPersonByIdError,
+        GetPersonByIdResponse,
+        ReturnType<typeof getPersonByIdQueryKey>
+    >({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await getPersonById({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true,
+            })
+            return data
+        },
+        queryKey: getPersonByIdQueryKey(options),
+    })
+
 export const getPersonsCountQueryKey = (
     options?: Options<GetPersonsCountData>
 ) => createQueryKey("getPersonsCount", options)
@@ -541,4 +903,29 @@ export const getPersonsCountOptions = (
             return data
         },
         queryKey: getPersonsCountQueryKey(options),
+    })
+
+export const getLocksCountQueryKey = (options?: Options<GetLocksCountData>) =>
+    createQueryKey("getLocksCount", options)
+
+/**
+ * Get the total number of locks.
+ */
+export const getLocksCountOptions = (options?: Options<GetLocksCountData>) =>
+    queryOptions<
+        GetLocksCountResponse,
+        GetLocksCountError,
+        GetLocksCountResponse,
+        ReturnType<typeof getLocksCountQueryKey>
+    >({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await getLocksCount({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true,
+            })
+            return data
+        },
+        queryKey: getLocksCountQueryKey(options),
     })
