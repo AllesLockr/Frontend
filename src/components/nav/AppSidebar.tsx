@@ -17,6 +17,7 @@ import {
     Lock, type LucideIcon,
     MapPin,
     Network,
+    ShieldCheck,
     User,
     Users,
 } from "lucide-react"
@@ -70,6 +71,12 @@ export function AppSidebar() {
                 },
                 { id: "locks", icon: Lock, name: "Locks", path: "/locks" },
                 { id: "keys", icon: Key, name: "Keys", path: "/keys" },
+                {
+                    id: "access-grants",
+                    icon: ShieldCheck,
+                    name: "Access Grants",
+                    path: "/access-grants",
+                },
             ],
         },
         {
