@@ -7,6 +7,9 @@ export interface VendorLockStep {
     // Optional gate run before advancing to the next step. Reject to prevent
     // the wizard from advancing.
     onNext?: () => Promise<void>
+    // Optional action run when the final-step "Create lock" button is clicked.
+    // Reject to keep the dialog open and surface the error.
+    onCreate?: () => Promise<void>
 }
 
 export interface VendorLockStepsResult {

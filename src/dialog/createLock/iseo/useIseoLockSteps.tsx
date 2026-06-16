@@ -3,6 +3,7 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import {
     createLockMutation,
     getVendorSpecificDefinitionsOptions,
+    updateLockMutation,
 } from "@/client/@tanstack/react-query.gen.ts"
 import type { GetVendorDataResponseDto, LockDto } from "@/client"
 import type { VendorLockStepsResult } from "@/dialog/createLock/types.ts"
@@ -26,6 +27,7 @@ export function useIseoLockSteps(
     )
 
     const createMutation = useMutation(createLockMutation())
+    const updateMutation = useMutation(updateLockMutation())
 
     const fields = definitionsData?.vendorSpecificFields ?? []
 
@@ -39,6 +41,9 @@ export function useIseoLockSteps(
         })
         .filter((item): item is IseoCredential => item !== null)
 
+    const facilityName =
+        vendorData.baseUrl.match(/^https?:\/\/api-([^.]+)\./)?.[1] ?? ""
+
     return {
         steps: [
             {
@@ -46,6 +51,7 @@ export function useIseoLockSteps(
                 content: (
                     <CredentialsStep
                         credentials={credentials}
+                        facilityName={facilityName}
                         isPending={isPending}
                     />
                 ),
@@ -59,8 +65,25 @@ export function useIseoLockSteps(
             {
                 label: "Pairing",
                 content: <PairingStep lock={createdLock} />,
+                onCreate: async () => {
+                    if (!createdLock) {
+                        throw new Error(
+                            "No lock was created in the previous step.",
+                        )
+                    }
+                    await updateMutation.mutateAsync({
+                        path: { id: createdLock.id },
+                        body: {
+                            name: createdLock.name,
+                            serialNumber: createdLock.serialNumber,
+                            metadata: createdLock.metadata,
+                            apiIdentity: createdLock.apiIdentity,
+                        },
+                    })
+                },
             },
         ],
-        isLoading: isPending || createMutation.isPending,
+        isLoading:
+            isPending || createMutation.isPending || updateMutation.isPending,
     }
 }

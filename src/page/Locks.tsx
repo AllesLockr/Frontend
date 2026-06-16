@@ -28,7 +28,7 @@ import { cn } from "@/lib/utils"
 import { CreateLockDialog } from "@/dialog/createLock/CreateLockDialog.tsx"
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50, 100]
-const MAX_VISIBLE_METADATA = 2
+const MAX_VISIBLE_METADATA = 3
 
 function VendorBadge({ lock }: { lock: LockSchema }) {
     return <Badge variant="secondary">{lock.apiIdentity?.api ?? "Local"}</Badge>

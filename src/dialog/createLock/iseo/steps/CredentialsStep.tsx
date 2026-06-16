@@ -8,15 +8,20 @@ export interface IseoCredential {
 
 interface CredentialsStepProps {
     credentials: IseoCredential[]
+    facilityName: string
     isPending: boolean
 }
 
-export function CredentialsStep({ credentials, isPending }: CredentialsStepProps) {
+export function CredentialsStep({
+    credentials,
+    facilityName,
+    isPending,
+}: CredentialsStepProps) {
     return (
         <div className="flex flex-col gap-4">
             <p className="text-sm text-muted-foreground">
-                Please open the ISEO Installer App and login with the following
-                credentials. When logged in, proceed to the next step.
+                Please open the "Luckey Tools" App and login with the following
+                credentials. When logged in, click on "Next".
             </p>
 
             {isPending ? (
@@ -29,6 +34,11 @@ export function CredentialsStep({ credentials, isPending }: CredentialsStepProps
                 </div>
             ) : (
                 <div className="grid grid-cols-[auto_1fr] items-center gap-4">
+                    <CopyableField
+                        label="Facility name"
+                        value={facilityName}
+                        type="TEXT"
+                    />
                     {credentials.map(({ field, value }) => (
                         <CopyableField
                             key={field.name}

@@ -164,6 +164,20 @@ function VendorWizard({
         }
     }
 
+    const handleCreate = async () => {
+        setStepError(null)
+        try {
+            await vendorStep?.onCreate?.()
+            onCreate()
+        } catch (error: unknown) {
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : "An unexpected error occurred."
+            setStepError(message)
+        }
+    }
+
     return (
         <>
             <Stepper labels={labels} activeIndex={step} />
@@ -209,7 +223,11 @@ function VendorWizard({
                             Back
                         </Button>
                         {isLast ? (
-                            <Button type="button" onClick={onCreate}>
+                            <Button
+                                type="button"
+                                onClick={handleCreate}
+                                disabled={isLoading}
+                            >
                                 Create lock
                             </Button>
                         ) : (
