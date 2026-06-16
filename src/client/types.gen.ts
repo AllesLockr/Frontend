@@ -316,6 +316,12 @@ export type GetVendorDataResponseDto = {
     apiPassword?: string
     vendorConnectionState: string
     lastChecked: number
+    metadata?: Array<MetadataEntryDto>
+}
+
+export type MetadataEntryDto = {
+    key: string
+    value: string
 }
 
 export type GetImplementedVendorsResponseDto = {
@@ -330,6 +336,7 @@ export type GetVendorSpecificDefinitionsResponseDto = {
 export type VendorSpecificFieldDto = {
     name: string
     type: string
+    description: string
 }
 
 export type GetUserResponseSchema = {
