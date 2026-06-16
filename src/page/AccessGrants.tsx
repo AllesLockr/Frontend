@@ -61,6 +61,10 @@ export function AccessGrants() {
     const locksQuery = useMutation(getLocksPagedMutation())
     const revoke = useMutation(revokeAccessMutation())
 
+    const { mutate: grantsMutate } = grants
+    const { mutate: personsMutate } = personsQuery
+    const { mutate: locksMutate } = locksQuery
+
     const persons = useMemo(
         () => personsQuery.data?.page.content ?? [],
         [personsQuery.data],
@@ -83,13 +87,13 @@ export function AccessGrants() {
     }, [locks])
 
     useEffect(() => {
-        personsQuery.mutate({ body: { filter: {}, page: 0, size: LOOKUP_SIZE } })
-        locksQuery.mutate({ body: { page: 0, size: LOOKUP_SIZE } })
-    }, [personsQuery.mutate, locksQuery.mutate])
+        personsMutate({ body: { filter: {}, page: 0, size: LOOKUP_SIZE } })
+        locksMutate({ body: { page: 0, size: LOOKUP_SIZE } })
+    }, [personsMutate, locksMutate])
 
     const fetchGrants = useCallback(
         (currentPage: number) => {
-            grants.mutate({
+            grantsMutate({
                 body: {
                     page: currentPage,
                     size,
@@ -98,7 +102,7 @@ export function AccessGrants() {
                 },
             })
         },
-        [grants.mutate, size, personFilter, lockFilter],
+        [grantsMutate, size, personFilter, lockFilter],
     )
 
     useEffect(() => {
