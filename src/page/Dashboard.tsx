@@ -1,5 +1,5 @@
 import { StatsCard } from "@/components/ui/StatsCard.tsx"
-import { Building, Key, Lock, MapPin, User } from "lucide-react"
+import { Lock, User } from "lucide-react"
 import {
     Table,
     TableBody,
@@ -39,10 +39,7 @@ export function Dashboard() {
         <div className="flex flex-col gap-4">
             <div className="flex gap-8 max-md:flex-col">
                 <StatsCard title={locksCount?.data?.count?.toString() ?? "N/A"} description="Locks" icon={Lock} />
-                <StatsCard title="TODO" description="Keys" icon={Key} />
                 <StatsCard title={personCount?.data?.count?.toString() ?? "N/A"} description="Persons" icon={User} />
-                <StatsCard title="TODO" description="Buildings" icon={Building} />
-                <StatsCard title="TODO" description="Zones" icon={MapPin} />
             </div>
 
             <h1 className="text-xl font-bold">Vendor-Overview</h1>

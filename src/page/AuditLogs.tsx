@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select"
 import {
     getAllAuditLogsPagedMutation,
-    getUserOptions
+    getUserOptions,
 } from "@/client/@tanstack/react-query.gen.ts"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useCallback, useEffect, useState } from "react"
@@ -35,26 +35,35 @@ export function Username({ userId }: { userId: string }) {
     )
 
     if (isLoading) {
-        return <span className="text-muted-foreground animate-pulse">Lade...</span>
+        return (
+            <span className="animate-pulse text-muted-foreground">Lade...</span>
+        )
     }
 
     if (error || !data) {
-        return <span className="font-mono text-xs text-muted-foreground">{userId}</span>
+        return (
+            <span className="font-mono text-xs text-muted-foreground">
+                {userId}
+            </span>
+        )
     }
 
-    return <span className="font-medium">{data.user.firstname} {data.user.lastname}</span>
+    return (
+        <span className="font-medium">
+            {data.user.firstname} {data.user.lastname}
+        </span>
+    )
 }
 
 export function AuditLogs() {
     const [page, setPage] = useState(0)
     const [size, setSize] = useState(10)
 
-    const [performedByUserId, setPerformedByUserId] = useState("")
+    const [searchText, setSearchText] = useState("")
     const [fromDate, setFromDate] = useState("")
     const [toDate, setToDate] = useState("")
 
-    const [debouncedPerformedByUserId, setDebouncedPerformedByUserId] =
-        useState("")
+    const [debouncedSearchText, setDebouncedSearchText] = useState("")
     const [debouncedFromDate, setDebouncedFromDate] = useState("")
     const [debouncedToDate, setDebouncedToDate] = useState("")
 
@@ -64,34 +73,37 @@ export function AuditLogs() {
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            setDebouncedPerformedByUserId(performedByUserId)
+            setDebouncedSearchText(searchText)
             setDebouncedFromDate(fromDate)
             setDebouncedToDate(toDate)
             setPage(0)
         }, 300)
 
         return () => clearTimeout(timer)
-    }, [performedByUserId, fromDate, toDate])
+    }, [searchText, fromDate, toDate])
 
-    const fetchAuditLogs = useCallback((pageToFetch: number) => {
-        const filter: AuditLogFilterDto = {}
+    const fetchAuditLogs = useCallback(
+        (pageToFetch: number) => {
+            const filter: AuditLogFilterDto = {}
 
-        if (debouncedPerformedByUserId) {
-            filter.performedByUserId = debouncedPerformedByUserId
-        }
+            if (debouncedSearchText) {
+                filter.searchText = debouncedSearchText
+            }
 
-        if (debouncedFromDate) {
-            const date = new Date(`${debouncedFromDate}T00:00:00`)
-            filter.fromDate = date.toISOString()
-        }
+            if (debouncedFromDate) {
+                const date = new Date(`${debouncedFromDate}T00:00:00`)
+                filter.fromDate = date.toISOString()
+            }
 
-        if (debouncedToDate) {
-            const date = new Date(`${debouncedToDate}T23:59:59.999`)
-            filter.toDate = date.toISOString()
-        }
+            if (debouncedToDate) {
+                const date = new Date(`${debouncedToDate}T23:59:59.999`)
+                filter.toDate = date.toISOString()
+            }
 
-        mutate({ body: { filter, page: pageToFetch, size } })
-    }, [debouncedPerformedByUserId, debouncedFromDate, debouncedToDate, size, mutate])
+            mutate({ body: { filter, page: pageToFetch, size } })
+        },
+        [debouncedSearchText, debouncedFromDate, debouncedToDate, size, mutate]
+    )
 
     useEffect(() => {
         fetchAuditLogs(page)
@@ -101,24 +113,25 @@ export function AuditLogs() {
     const auditLogs = pageInfo?.content ?? []
 
     return (
-        <div className="space-y-4">
+        <div className="flex h-full flex-col gap-4 overflow-hidden">
             <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <h2 className="text-2xl font-semibold">Audit Logs</h2>
                 <div className="flex flex-wrap items-center gap-3">
                     <div className="relative w-64">
                         <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
-                            placeholder="Filter by User ID..."
-                            aria-label="Filter by User ID"
+                            placeholder="Search..."
+                            aria-label="Search..."
                             className="pl-9"
-                            value={performedByUserId}
-                            onChange={(e) =>
-                                setPerformedByUserId(e.target.value)}
+                            value={searchText}
+                            onChange={(e) => setSearchText(e.target.value)}
                         />
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground">From:</span>
+                        <span className="text-xs text-muted-foreground">
+                            From:
+                        </span>
                         <Input
                             type="date"
                             aria-label="From date"
@@ -129,7 +142,9 @@ export function AuditLogs() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground">To:</span>
+                        <span className="text-xs text-muted-foreground">
+                            To:
+                        </span>
                         <Input
                             type="date"
                             aria-label="To date"
@@ -141,58 +156,64 @@ export function AuditLogs() {
                 </div>
             </section>
 
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Created At</TableHead>
-                        <TableHead>Performed By</TableHead>
-                        <TableHead>Message</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {isPending ? (
+            <div className="flex-1 overflow-y-auto">
+                <Table>
+                    <TableHeader>
                         <TableRow>
-                            <TableCell
-                                colSpan={3}
-                                className="text-center text-muted-foreground"
-                            >
-                                Loading...
-                            </TableCell>
+                            <TableHead>Created At</TableHead>
+                            <TableHead>Performed By</TableHead>
+                            <TableHead>Message</TableHead>
                         </TableRow>
-                    ) : error ? (
-                        <TableRow>
-                            <TableCell
-                                colSpan={3}
-                                className="text-center text-destructive"
-                            >
-                                {error.message ? error.message : "An unexpected error occurred."}
-                            </TableCell>
-                        </TableRow>
-                    ) : auditLogs.length === 0 ? (
-                        <TableRow>
-                            <TableCell
-                                colSpan={3}
-                                className="text-center text-muted-foreground"
-                            >
-                                No audit logs found.
-                            </TableCell>
-                        </TableRow>
-                    ) : (
-                        auditLogs.map((log) => (
-                            <TableRow key={log.id}>
-                                <TableCell className="whitespace-nowrap">
-                                    {formatDate(log.createdAt)}
+                    </TableHeader>
+                    <TableBody>
+                        {isPending ? (
+                            <TableRow>
+                                <TableCell
+                                    colSpan={3}
+                                    className="text-center text-muted-foreground"
+                                >
+                                    Loading...
                                 </TableCell>
-                                <TableCell>
-                                    {/* Hier wird nun die Username-Komponente gerendert */}
-                                    <Username userId={log.performedByUserId} />
-                                </TableCell>
-                                <TableCell>{log.message}</TableCell>
                             </TableRow>
-                        ))
-                    )}
-                </TableBody>
-            </Table>
+                        ) : error ? (
+                            <TableRow>
+                                <TableCell
+                                    colSpan={3}
+                                    className="text-center text-destructive"
+                                >
+                                    {error.message
+                                        ? error.message
+                                        : "An unexpected error occurred."}
+                                </TableCell>
+                            </TableRow>
+                        ) : auditLogs.length === 0 ? (
+                            <TableRow>
+                                <TableCell
+                                    colSpan={3}
+                                    className="text-center text-muted-foreground"
+                                >
+                                    No audit logs found.
+                                </TableCell>
+                            </TableRow>
+                        ) : (
+                            auditLogs.map((log) => (
+                                <TableRow key={log.id}>
+                                    <TableCell className="whitespace-nowrap">
+                                        {formatDate(log.createdAt)}
+                                    </TableCell>
+                                    <TableCell>
+                                        {/* Hier wird nun die Username-Komponente gerendert */}
+                                        <Username
+                                            userId={log.performedByUserId}
+                                        />
+                                    </TableCell>
+                                    <TableCell>{log.message}</TableCell>
+                                </TableRow>
+                            ))
+                        )}
+                    </TableBody>
+                </Table>
+            </div>
 
             <div className="flex items-center justify-between text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
@@ -201,7 +222,10 @@ export function AuditLogs() {
                         value={String(size)}
                         onValueChange={(val) => setSize(Number(val))}
                     >
-                        <SelectTrigger className="w-20" aria-label="Rows per page">
+                        <SelectTrigger
+                            className="w-20"
+                            aria-label="Rows per page"
+                        >
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>

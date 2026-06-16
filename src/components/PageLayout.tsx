@@ -16,9 +16,11 @@ export function PageLayout({ children }: PageLayoutProps) {
 
         <SidebarProvider>
             <AppSidebar />
-            <main className="w-full">
+            <main className="flex h-svh w-full flex-col">
                 <SidebarTrigger className="p-4" />
-                <div className="p-8">{children}</div>
+                <div className="flex flex-1 flex-col overflow-hidden p-8">
+                    {children}
+                </div>
             </main>
         </SidebarProvider>
     )

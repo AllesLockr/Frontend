@@ -32,7 +32,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 export function App() {
     return (
         <AuthProvider>
-            <div className="flex h-screen w-screen flex-1 items-center justify-center">
+            <div className="w-screen">
                 <Toaster richColors position="top-center" />
                 <Routes>
                     <Route

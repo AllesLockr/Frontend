@@ -125,9 +125,9 @@ export type PageSchemaUserSchema = {
     size: number
     totalElements: number
     totalPages: number
-    isEmpty: boolean
     isFirst: boolean
     isLast: boolean
+    isEmpty: boolean
 }
 
 export type UserSchema = {
@@ -197,9 +197,9 @@ export type PageSchemaPersonSchema = {
     size: number
     totalElements: number
     totalPages: number
-    isEmpty: boolean
     isFirst: boolean
     isLast: boolean
+    isEmpty: boolean
 }
 
 export type PersonSchema = {
@@ -243,9 +243,9 @@ export type PageSchemaLockSchema = {
     size: number
     totalElements: number
     totalPages: number
-    isEmpty: boolean
     isFirst: boolean
     isLast: boolean
+    isEmpty: boolean
 }
 
 export type GetLocksPagedRequestSchema = {
@@ -270,15 +270,15 @@ export type PageGetAuditLogResponseDto = {
     size: number
     totalElements: number
     totalPages: number
-    isEmpty: boolean
     isFirst: boolean
     isLast: boolean
+    isEmpty: boolean
 }
 
 export type AuditLogFilterDto = {
     fromDate?: string
     toDate?: string
-    performedByUserId?: string
+    searchText?: string
 }
 
 export type GetAllAuditLogsPagedRequestDto = {
@@ -329,9 +329,9 @@ export type PageSchemaAccessGrantSchema = {
     size: number
     totalElements: number
     totalPages: number
-    isEmpty: boolean
     isFirst: boolean
     isLast: boolean
+    isEmpty: boolean
 }
 
 export type GetAccessGrantsPagedRequestSchema = {

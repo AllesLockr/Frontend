@@ -53,12 +53,15 @@ export function Users() {
     const prevSearchRef = useRef(debouncedSearch)
     const prevSizeRef = useRef(size)
 
-    const fetchUsers = useCallback((pageToFetch: number) => {
-        const filter: UserFilterSchema = debouncedSearch
-            ? { search: debouncedSearch }
-            : {}
-        mutate({ body: { filter, page: pageToFetch, size } })
-    }, [debouncedSearch, size, mutate])
+    const fetchUsers = useCallback(
+        (pageToFetch: number) => {
+            const filter: UserFilterSchema = debouncedSearch
+                ? { search: debouncedSearch }
+                : {}
+            mutate({ body: { filter, page: pageToFetch, size } })
+        },
+        [debouncedSearch, size, mutate]
+    )
 
     useEffect(() => {
         let currentPage = page
@@ -88,7 +91,7 @@ export function Users() {
     }
 
     return (
-        <div className="space-y-4">
+        <div className="flex h-full flex-col gap-4 overflow-hidden">
             <section className="flex items-center justify-between">
                 <h2 className="text-2xl font-semibold">Users</h2>
                 <div className="flex items-center gap-2">
@@ -107,96 +110,104 @@ export function Users() {
                 </div>
             </section>
 
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Firstname</TableHead>
-                        <TableHead>Lastname</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Username</TableHead>
-                        <TableHead>Role</TableHead>
-                        <TableHead>Is Active</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {isPending ? (
+            <div className="flex-1 overflow-y-auto">
+                <Table>
+                    <TableHeader>
                         <TableRow>
-                            <TableCell
-                                colSpan={6}
-                                className="text-center text-muted-foreground"
-                            >
-                                Loading...
-                            </TableCell>
+                            <TableHead>Firstname</TableHead>
+                            <TableHead>Lastname</TableHead>
+                            <TableHead>Email</TableHead>
+                            <TableHead>Username</TableHead>
+                            <TableHead>Role</TableHead>
+                            <TableHead>Is Active</TableHead>
                         </TableRow>
-                    ) : error ? (
-                        <TableRow>
-                            <TableCell
-                                colSpan={6}
-                                className="text-center text-destructive"
-                            >
-                                Failed to load users. Please try again.
-                            </TableCell>
-                        </TableRow>
-                    ) : users.length === 0 ? (
-                        <TableRow>
-                            <TableCell
-                                colSpan={6}
-                                className="text-center text-muted-foreground"
-                            >
-                                No users found.
-                            </TableCell>
-                        </TableRow>
-                    ) : (
-                        users.map((user) => (
-                            <TableRow
-                                key={user.id}
-                                className={currentUser?.role === "ADMIN" ? "cursor-pointer" : ""}
-                                onClick={() => handleRowClick(user)}
-                            >
-                                <TableCell>{user.firstname}</TableCell>
-                                <TableCell>{user.lastname}</TableCell>
-                                <TableCell>{user.email}</TableCell>
-                                <TableCell className="flex items-center gap-2">
-                                    {user.username}
-                                    {user.id === currentUser?.id && (
-                                        <UserRound
-                                            className="h-4 w-4"
-                                            aria-label="This is you"
-                                        />
-                                    )}
-                                </TableCell>
-                                <TableCell>
-                                    <Badge
-                                        className={
-                                            user.role === "ADMIN"
-                                                ? "bg-violet-600 text-white hover:bg-violet-700"
-                                                : ""
-                                        }
-                                        variant={
-                                            user.role === "ADMIN"
-                                                ? "default"
-                                                : "secondary"
-                                        }
-                                    >
-                                        {user?.role ?? "N/A"}
-                                    </Badge>
-                                </TableCell>
-                                <TableCell>
-                                    <Badge
-                                        variant={
-                                            user.isActive
-                                                ? "default"
-                                                : "destructive"
-                                        }
-                                    >
-                                        {user.isActive ? "Active" : "Inactive"}
-                                    </Badge>
+                    </TableHeader>
+                    <TableBody>
+                        {isPending ? (
+                            <TableRow>
+                                <TableCell
+                                    colSpan={6}
+                                    className="text-center text-muted-foreground"
+                                >
+                                    Loading...
                                 </TableCell>
                             </TableRow>
-                        ))
-                    )}
-                </TableBody>
-            </Table>
+                        ) : error ? (
+                            <TableRow>
+                                <TableCell
+                                    colSpan={6}
+                                    className="text-center text-destructive"
+                                >
+                                    Failed to load users. Please try again.
+                                </TableCell>
+                            </TableRow>
+                        ) : users.length === 0 ? (
+                            <TableRow>
+                                <TableCell
+                                    colSpan={6}
+                                    className="text-center text-muted-foreground"
+                                >
+                                    No users found.
+                                </TableCell>
+                            </TableRow>
+                        ) : (
+                            users.map((user) => (
+                                <TableRow
+                                    key={user.id}
+                                    className={
+                                        currentUser?.role === "ADMIN"
+                                            ? "cursor-pointer"
+                                            : ""
+                                    }
+                                    onClick={() => handleRowClick(user)}
+                                >
+                                    <TableCell>{user.firstname}</TableCell>
+                                    <TableCell>{user.lastname}</TableCell>
+                                    <TableCell>{user.email}</TableCell>
+                                    <TableCell className="flex items-center gap-2">
+                                        {user.username}
+                                        {user.id === currentUser?.id && (
+                                            <UserRound
+                                                className="h-4 w-4"
+                                                aria-label="This is you"
+                                            />
+                                        )}
+                                    </TableCell>
+                                    <TableCell>
+                                        <Badge
+                                            className={
+                                                user.role === "ADMIN"
+                                                    ? "bg-violet-600 text-white hover:bg-violet-700"
+                                                    : ""
+                                            }
+                                            variant={
+                                                user.role === "ADMIN"
+                                                    ? "default"
+                                                    : "secondary"
+                                            }
+                                        >
+                                            {user?.role ?? "N/A"}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Badge
+                                            variant={
+                                                user.isActive
+                                                    ? "default"
+                                                    : "destructive"
+                                            }
+                                        >
+                                            {user.isActive
+                                                ? "Active"
+                                                : "Inactive"}
+                                        </Badge>
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        )}
+                    </TableBody>
+                </Table>
+            </div>
 
             <div className="flex items-center justify-between text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
