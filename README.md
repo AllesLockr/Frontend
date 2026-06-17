@@ -1,6 +1,6 @@
 # AllesLocker — Frontend
 
-> Web-based UI for managing electronic locks and access rights across multiple vendors.
+> Web-based Application to manage locks from different vendors on a single platform.
 
 ## Tech Stack
 
