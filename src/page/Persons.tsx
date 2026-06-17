@@ -19,8 +19,9 @@ import { getPersonsPagedMutation } from "@/client/@tanstack/react-query.gen.ts"
 import { useMutation } from "@tanstack/react-query"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { ChevronLeft, ChevronRight, Search } from "lucide-react"
-import type { PersonFilterSchema } from "@/client/types.gen.ts"
+import type { PersonFilterSchema, PersonSchema } from "@/client/types.gen.ts"
 import { CreatePersonDialog } from "@/dialog/CreatePersonDialog.tsx"
+import { PersonDetail } from "@/dialog/PersonDetail.tsx"
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50, 100]
 
@@ -29,6 +30,10 @@ export function Persons() {
     const [size, setSize] = useState(10)
     const [search, setSearch] = useState("")
     const [debouncedSearch, setDebouncedSearch] = useState("")
+    const [selectedPerson, setSelectedPerson] = useState<PersonSchema | null>(
+        null
+    )
+    const [detailOpen, setDetailOpen] = useState(false)
 
     const { data, error, mutate, isPending } = useMutation(
         getPersonsPagedMutation()
@@ -73,6 +78,11 @@ export function Persons() {
 
     const pageInfo = data?.page
     const persons = pageInfo?.content ?? []
+
+    const handleRowClick = (person: PersonSchema) => {
+        setSelectedPerson(person)
+        setDetailOpen(true)
+    }
 
     return (
         <div className="flex h-full flex-col gap-4 overflow-hidden">
@@ -131,7 +141,11 @@ export function Persons() {
                             </TableRow>
                         ) : (
                             persons.map((person) => (
-                                <TableRow key={person.id}>
+                                <TableRow
+                                    key={person.id}
+                                    className="cursor-pointer"
+                                    onClick={() => handleRowClick(person)}
+                                >
                                     <TableCell>{person.firstname}</TableCell>
                                     <TableCell>{person.lastname}</TableCell>
                                     <TableCell>{person.email}</TableCell>
@@ -198,6 +212,13 @@ export function Persons() {
                     </Button>
                 </div>
             </div>
+
+            <PersonDetail
+                person={selectedPerson}
+                open={detailOpen}
+                onOpenChange={setDetailOpen}
+                onRefresh={() => fetchPersons(page)}
+            />
         </div>
     )
 }
