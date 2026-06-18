@@ -29,7 +29,7 @@ export function useAssaLockSteps(
                     })
                     await updateMutation.mutateAsync({
                         path: { id: lock.id },
-                        body: { name },
+                        body: { name: name.trim() },
                     })
                 },
             },
