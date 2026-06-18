@@ -1,6 +1,9 @@
-# AllesLocker — Frontend
+<div align="center">
+    <img src="https://media.nocars.tk/lock.svg" alt="logo" width="50" />
+    <h1>AllesLocker - Frontend</h1>
+</div>
 
-> Web-based Application to manage locks from different vendors on a single platform.
+Frontend Application to manage locks from different vendors on a single platform.
 
 ## Tech Stack
 
@@ -14,125 +17,12 @@
 - **Package Manager:** pnpm
 
 ## Quick Start (Development)
-
-### Prerequisites
-
-- Node.js 22
-- pnpm 11.6+
-- Backend running on `http://localhost:8080` (see [Backend README](https://github.com/alleslockr/alleslocker-backend))
-
-### Setup
-
-```sh
-pnpm install
-pnpm dev
-```
-
-The dev server starts on `http://localhost:5173` and proxies `/api` to `http://localhost:8080`.
-
-### Useful Commands
-
-| Command | Description |
-|---|---|
-| `pnpm dev` | Start Vite dev server |
-| `pnpm build` | Typecheck + production build |
-| `pnpm lint` | ESLint check |
-| `pnpm format` | Prettier format |
-| `pnpm typecheck` | TypeScript type check |
-| `pnpm openapi-ts` | Regenerate API client from backend OpenAPI spec |
-
-## Project Structure
-
-```
-src/
-├── main.tsx          # Entry point
-├── App.tsx           # Routes
-├── client/           # Auto-generated API client (do not edit)
-├── components/       # Shared UI components
-├── config/           # App configuration (API URL, etc.)
-├── dialog/           # Modal overlays
-├── hook/             # React hooks (auth, theme, etc.)
-└── page/             # Page components
-```
-
-## Production Setup (Docker Compose)
-
-The entire stack (MariaDB + Backend + Frontend) can be started with Docker Compose:
-
-```yaml
-services:
-  mariadb:
-    image: mariadb:11
-    restart: unless-stopped
-    environment:
-      MARIADB_ROOT_PASSWORD: CHANGEME_DB_PASSWORD
-      MARIADB_DATABASE: CHANGEME_DB_NAME
-    ports:
-      - "3306:3306"
-    volumes:
-      - mariadb_data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  backend:
-    image: ghcr.io/alleslockr/alleslocker-backend:latest
-    restart: unless-stopped
-    ports:
-      - "8080:8080"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mariadb://mariadb:3306/CHANGEME_DB_NAME
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: CHANGEME_DB_PASSWORD
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      SECURITY_JWT_SECRET: CHANGEME_JWT_SECRET
-      SECURITY_JWT_EXPIRATION: CHANGEME_JWT_EXPIRATION_MS
-      APP_SECURITY_MASTER_KEY: CHANGEME_MASTER_KEY
-      APP_CORS_ALLOWED_ORIGINS: CHANGEME_CORS_ORIGINS
-    depends_on:
-      mariadb:
-        condition: service_healthy
-
-  frontend:
-    image: ghcr.io/alleslockr/alleslocker-frontend:latest
-    restart: unless-stopped
-    ports:
-      - "5173:80"
-    environment:
-      VITE_API_URL: CHANGEME_API_URL
-    depends_on:
-      - backend
-
-volumes:
-  mariadb_data:
-```
+Please refer to [Contributing](./CONTRIBUTING.md)
 
 > For a detailed configuration guide and explanation of all placeholders, see the [Wiki — Installation](https://github.com/alleslockr/alleslocker-frontend/wiki/Installation).
 
-## Docker
 
-Multi-stage build:
-1. **Builder** — `node:22-alpine`, installs dependencies, runs `pnpm build`
-2. **Runtime** — `nginx:alpine`, serves the built static files on port 80
+## Repositories
 
-Build manually:
-
-```sh
-docker build -t alleslocker-frontend:latest .
-```
-
-## Contributing
-
-See [CONTRIBUTING.md](./CONTRIBUTING.md).
-
-## License
-
-GNU AGPLv3 — see [LICENSE](./LICENSE).
-
-## Team
-
-- [Name 1] ([@github-handle-1](https://github.com/github-handle-1))
-- [Name 2] ([@github-handle-2](https://github.com/github-handle-2))
-- [Name 3] ([@github-handle-3](https://github.com/github-handle-3))
+- [Frontend](https://github.com/AllesLockr/Frontend)
+- [Backend](https://github.com/AllesLockr/Backend)
